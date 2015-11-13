@@ -1,3 +1,7 @@
+package threads;
+
+import core.Topic;
+
 /**
  * Created by ayy on 11/11/15.
  */

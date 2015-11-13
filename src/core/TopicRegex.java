@@ -1,3 +1,5 @@
+package core;
+
 /**
  * Created by ayy on 11/11/15.
  */
@@ -13,7 +15,7 @@ public class TopicRegex {
     private String regexPattern(String srcBoard) {
         switch(srcBoard) {
             case "mu":
-                pattern = "{sub: (kpop general|KPOP GENERAL|kpop|kpopg|kpg)}";
+                pattern = "{sub: (Kpop general|KPOP GENERAL|kpop|kpopg|kpg)}";
                 break;
             case "p":
                 pattern = "{sub: RECENT PHOTO THREAD}";

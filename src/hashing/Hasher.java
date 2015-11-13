@@ -1,3 +1,5 @@
+package hashing;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 
@@ -9,19 +11,19 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.Arrays;
 
-public class Hashing {
+public class Hasher {
 
     String filePath;
     String listPath;
     String hashType;
 
-    public Hashing(String filePath, String listPath, String hashType) {
+    public Hasher(String filePath, String listPath, String hashType) {
         this.filePath = filePath;
         //this.listPath = listPath;
         //this.hashType = hashType;
     }
 
-    String generateMD5() {
+    synchronized public String generateMD5() {
         String genHash = null;
         try {
             genHash = DigestUtils.md5Hex(new FileInputStream(filePath));
@@ -31,7 +33,7 @@ public class Hashing {
         return genHash;
     }
 
-    void saveHash(String listPat) {
+    synchronized public void saveHash(String listPat) {
         try {
             String data = "/home/ayy/dlthing/hashes.txt";
             File file = new File(data);

@@ -1,3 +1,5 @@
+package core;
+
 import com.jaunt.JNode;
 import com.jaunt.NotFound;
 import com.jaunt.UserAgent;

@@ -1,3 +1,5 @@
+package core;
+
 import org.apache.commons.io.FileUtils;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -5,6 +7,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.io.File;
+import hashing.Hasher;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -84,8 +87,8 @@ public abstract class ImgBoard extends Thread {
                 String completeDest = fileDestination + convertUrl.substring(21, convertUrl.length());
                 File destination = new File(completeDest);
                 FileUtils.copyURLToFile(website, destination);
-                Hashing hasher = new Hashing(completeDest,null,null);
-                hasher.saveHash(hasher.generateMD5());
+                Hasher hasherfunc = new Hasher(completeDest,null,null);
+                hasherfunc.saveHash(hasherfunc.generateMD5());
                 if (i == x.size() - 1) {
                     System.out.printf("\r100%% DLing Files are located in %s", fileDestination);
                 }
