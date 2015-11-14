@@ -52,7 +52,7 @@ public abstract class ImgBoard extends Thread {
             URL JSON_API = new URL(locBoard());
             FileUtils.copyURLToFile(JSON_API, dest);
         } catch (SocketTimeoutException e) {
-            System.out.println("Site is down or you're not connected");
+            System.out.println("[ERROR] Site is down or you're not connected");
         } catch (Exception e) {
             System.out.println(locBoard());
         }
@@ -67,7 +67,7 @@ public abstract class ImgBoard extends Thread {
                 elemnlist.add("http:" + x.attr("href"));
             }
         } catch (HttpStatusException x) {
-            System.out.println(Thread.currentThread().getName() + " Failed to locate thread");
+            System.out.println("[ERROR] " + Thread.currentThread().getName() + " Failed to locate thread");
             Thread.interrupted();
         } catch (Exception e) {
             System.out.println(e);
@@ -84,7 +84,7 @@ public abstract class ImgBoard extends Thread {
                     System.out.println("Downloading " + x.size() + " pics/vids from " + board);
                 }
                 precentage = (i * 100 / x.size());
-                System.out.printf("%d %% %s DLing: %s%n", precentage, Thread.currentThread().getName(), x.get(i));
+                System.out.printf("[INFO] %d %% %s DLing: %s%n", precentage, Thread.currentThread().getName(), x.get(i));
                 //System.out.println(precentage + "% DLing: " + x.get(i));
                 URL website = new URL(x.get(i));
                 String convertUrl = x.get(i).toString();
@@ -102,7 +102,7 @@ public abstract class ImgBoard extends Thread {
                     FileUtils.deleteQuietly(destination);
                 }
                 if (i == x.size() - 1) {
-                    System.out.printf("\r100%% DLing Files are located in %s", fileDestination);
+                    System.out.printf("[SUCCESS] 100%% DLing Files are located in %s", fileDestination);
                 }
             }
         } catch (HttpStatusException e) {

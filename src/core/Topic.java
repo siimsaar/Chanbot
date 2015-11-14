@@ -28,7 +28,7 @@ public class Topic extends ImgBoard {
             JNode thread = userAgent.json.findEvery(pattern.getPattern()).findEvery("no").get(0);
             dataString = thread.toString();
             if (dataString.equals("[]\n")) {
-                System.out.println("Couldnt find the thread");
+                System.out.println("[ERROR] Couldnt find the thread");
             }
         } catch (NotFound e) {
             Thread.interrupted();
@@ -48,7 +48,7 @@ public class Topic extends ImgBoard {
 
     @Override
     public void run() {
-        System.out.println("Starting " + Thread.currentThread().getName());
+        System.out.println("[INFO] Starting " + Thread.currentThread().getName());
         setThreadNum();
         dlJSON();
         dlPictures(getLinks());
@@ -62,7 +62,7 @@ public class Topic extends ImgBoard {
         return threadNum;
     }
 
-    void setWEBM() {
+    public void setWEBM() {
         dlWEBM = true;
     }
 

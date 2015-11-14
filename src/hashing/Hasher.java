@@ -74,7 +74,7 @@ public class Hasher {
             while (reader.hasNextLine()) {
                 currentHash = reader.nextLine();
                 if (comparedHash.equals(currentHash)) {
-                    System.out.println("exists");
+                    System.out.println("[INFO] File has been previously downloaded");
                     return true;
                 }
             }
