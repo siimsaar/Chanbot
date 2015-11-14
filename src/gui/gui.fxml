@@ -5,26 +5,25 @@
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections ?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
    <children>
-      <Button fx:id="startButton" layoutX="449.0" layoutY="53.0" mnemonicParsing="false" onAction="#startThread" text="Start">
+      <Button fx:id="startButton" layoutX="498.0" layoutY="113.0" mnemonicParsing="false" onAction="#startThread" prefHeight="30.0" prefWidth="59.0" text="Start">
          <font>
-            <Font name="PragmataPro" size="14.0" />
+            <Font size="14.0" />
          </font>
       </Button>
-      <Text layoutX="50.0" layoutY="91.0" strokeType="OUTSIDE" strokeWidth="0.0" text="chanMux" wrappingWidth="287.126953125">
+      <Text layoutX="39.0" layoutY="90.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ämblik" wrappingWidth="287.126953125">
          <font>
             <Font name="Ubuntu" size="66.0" />
          </font>
       </Text>
-      <ToggleButton fx:id="enableWEBM" layoutX="433.0" layoutY="91.0" mnemonicParsing="false" text="Enable WEBM">
-         <font>
-            <Font size="11.0" />
-         </font>
-      </ToggleButton>
       <TextArea fx:id="stdout" layoutX="14.0" layoutY="154.0" prefHeight="231.0" prefWidth="571.0" />
-      <ProgressIndicator fx:id="progressThing" layoutX="536.0" layoutY="56.0" progress="0.0" />
-      <Text layoutX="61.0" layoutY="109.0" strokeType="OUTSIDE" strokeWidth="0.0" text="version 0.01 aka barely werks" wrappingWidth="238.126953125" />
+      <Text layoutX="63.0" layoutY="109.0" strokeType="OUTSIDE" strokeWidth="0.0" text="version 0.02  so buggy oh wow" wrappingWidth="238.126953125" />
+      <Text layoutX="416.0" layoutY="43.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Select topic to watch" wrappingWidth="133.126953125" />
+      <CheckBox fx:id="enableWEBM" layoutX="416.0" layoutY="86.0" mnemonicParsing="false" text="Download WEBM" />
+      <ComboBox fx:id="topic" layoutX="408.0" layoutY="52.0" prefWidth="150.0" promptText="Pick your poison" />
+      <TextField fx:id="refreshInt" layoutX="408.0" layoutY="114.0" prefHeight="30.0" prefWidth="80.0" promptText="Interval" />
    </children>
 </Pane>
