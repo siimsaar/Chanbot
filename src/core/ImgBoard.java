@@ -78,22 +78,29 @@ public abstract class ImgBoard extends Thread {
 
     void dlPictures(ArrayList<String> x) {
         int precentage;
-        ArrayList<String> precentageArray;
         try {
             for (int i = 0; i < x.size(); i++) {
                 if (i == 0) {
                     System.out.println("Downloading " + x.size() + " pics/vids from " + board);
                 }
                 precentage = (i * 100 / x.size());
-                System.out.printf("\r%d %% %s DLing: %s", precentage, Thread.currentThread().getName(), x.get(i));
+                System.out.printf("%d %% %s DLing: %s%n", precentage, Thread.currentThread().getName(), x.get(i));
                 //System.out.println(precentage + "% DLing: " + x.get(i));
                 URL website = new URL(x.get(i));
                 String convertUrl = x.get(i).toString();
                 String completeDest = fileDestination + convertUrl.substring(21, convertUrl.length());
-                File destination = new File(completeDest);
+                String tempDest = fileDestination + "Temp" + convertUrl.substring(21, convertUrl.length());
+                File destination = new File(tempDest);
                 FileUtils.copyURLToFile(website, destination);
-                Hasher hasherfunc = new Hasher(completeDest, null, "SHA1");
-                hasherfunc.saveHash(hasherfunc.generateMD5());
+                Hasher hasherfunc = new Hasher(destination.toString(), "SHA1");
+                if(hasherfunc.checkHashes()) {
+                    FileUtils.deleteQuietly(destination);
+                } else {
+                    hasherfunc.saveHash();
+                    File fdestination = new File (completeDest);
+                    FileUtils.copyFile(destination,fdestination);
+                    FileUtils.deleteQuietly(destination);
+                }
                 if (i == x.size() - 1) {
                     System.out.printf("\r100%% DLing Files are located in %s", fileDestination);
                 }
