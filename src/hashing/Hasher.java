@@ -13,6 +13,8 @@ import java.util.Arrays;
 
 public class Hasher {
 
+    final String newLine = System.getProperty("line.separator");
+
     String filePath;
     String listPath;
     String hashType;
@@ -20,7 +22,7 @@ public class Hasher {
     public Hasher(String filePath, String listPath, String hashType) {
         this.filePath = filePath;
         //this.listPath = listPath;
-        //this.hashType = hashType;
+        this.hashType = hashType;
     }
 
     synchronized public String generateMD5() {
@@ -33,13 +35,39 @@ public class Hasher {
         return genHash;
     }
 
+    synchronized public String generateSHA1() {
+        String genHash = null;
+        try {
+            genHash = DigestUtils.sha1Hex(new FileInputStream(filePath));
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return genHash;
+    }
+
+    public String getHash() {
+        String hash;
+        switch(hashType) {
+            case "MD5":
+                hash = generateMD5();
+                break;
+            case "SHA1":
+                hash = generateSHA1();
+                break;
+            default: hash = generateMD5();
+                break;
+
+        }
+        return hash;
+    }
+
     synchronized public void saveHash(String listPat) {
         try {
-            String data = "/home/ayy/dlthing/hashes.txt";
+            String data = "hashes.txt";
             File file = new File(data);
-            FileUtils.writeStringToFile(file, generateMD5());
+            FileUtils.writeStringToFile(file, getHash() + newLine, true);
         } catch (Exception e) {
-            System.out.println("nope");
+            System.out.println(e);
         }
     }
 }

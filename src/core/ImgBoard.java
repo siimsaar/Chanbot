@@ -8,6 +8,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.io.File;
 import hashing.Hasher;
+import sun.security.provider.MD5;
+
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -48,6 +51,8 @@ public abstract class ImgBoard extends Thread {
             File dest = new File(apiDestination);
             URL JSON_API = new URL(locBoard());
             FileUtils.copyURLToFile(JSON_API, dest);
+        } catch (SocketTimeoutException e) {
+            System.out.println("Site is down or you're not connected");
         } catch (Exception e) {
             System.out.println(locBoard());
         }
@@ -87,7 +92,7 @@ public abstract class ImgBoard extends Thread {
                 String completeDest = fileDestination + convertUrl.substring(21, convertUrl.length());
                 File destination = new File(completeDest);
                 FileUtils.copyURLToFile(website, destination);
-                Hasher hasherfunc = new Hasher(completeDest,null,null);
+                Hasher hasherfunc = new Hasher(completeDest, null, "SHA1");
                 hasherfunc.saveHash(hasherfunc.generateMD5());
                 if (i == x.size() - 1) {
                     System.out.printf("\r100%% DLing Files are located in %s", fileDestination);

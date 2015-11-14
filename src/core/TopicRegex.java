@@ -1,8 +1,5 @@
 package core;
 
-/**
- * Created by ayy on 11/11/15.
- */
 public class TopicRegex {
 
     String board;
