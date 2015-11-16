@@ -17,9 +17,7 @@ import java.util.NoSuchElementException;
 
 public abstract class ImgBoard extends Thread {
 
-    final static String[] SUPPORTED_BOARDS = {"hr", "mu", "wg", "pol", "g", "p"};
-    final static String[] JSON_BOARDS = {"4chan", "infinitychan"};
-    final static String[] BOARDS = {"krautchan", "2ch", "lainchan", "420chan"};
+    final static String[] SUPPORTED_BOARDS = {"hr", "mu", "wg", "pol", "g", "p", "2webm", "kpg"};
     final static String API_URL = "http://a.4cdn.org/";
     final static String API_EXTENSION = "/catalog.json";
 
@@ -31,7 +29,11 @@ public abstract class ImgBoard extends Thread {
         this.fileDestination = fileDestination;
         this.apiDestination = apiDestination;
         this.board = board;
+        settings.setValues(board);
     }
+
+    protected TopicRegex settings = new TopicRegex();
+
 
     String locBoard() {
         String boardLink = null;
@@ -41,7 +43,7 @@ public abstract class ImgBoard extends Thread {
             }
         }
         if (boardLink.equals(null)) {
-            System.err.println("no");
+            System.err.println("[ERROR] You shouldn't have this error");
         }
         return boardLink;
     }
@@ -60,17 +62,24 @@ public abstract class ImgBoard extends Thread {
 
     ArrayList<String> getLinks() {
         ArrayList<String> elemnlist = new ArrayList<>();
+        Document doc = null;
         try {
-            Document doc = Jsoup.connect("http://boards.4chan.org/" + board + "/thread/" + locThread()).get();
+            if(settings.getImgBoard().equals("4ch")) {
+                doc = Jsoup.connect(settings.getUrl() + locate4ch()).get();
+            } else if (settings.getImgBoard().equals("2ch")) {
+                doc = Jsoup.connect(locate2ch()).get();
+            }
+            //Document doc = Jsoup.connect(locate4ch()).get();
             Elements links = doc.select(webmCheck());
             for (Element x : links) {
-                elemnlist.add("http:" + x.attr("href"));
+                elemnlist.add(settings.getPrefix() + x.attr("href"));
             }
         } catch (HttpStatusException x) {
             System.out.println("[ERROR] " + Thread.currentThread().getName() + " Failed to locate thread");
+            x.printStackTrace();
             Thread.interrupted();
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
         return elemnlist;
     }
@@ -81,15 +90,15 @@ public abstract class ImgBoard extends Thread {
         try {
             for (int i = 0; i < x.size(); i++) {
                 if (i == 0) {
-                    System.out.println("Downloading " + x.size() + " pics/vids from " + board);
+                    System.out.println("[INFO] Downloading " + x.size() + " pics/vids from " + board);
                 }
                 precentage = (i * 100 / x.size());
                 System.out.printf("[INFO] %d %% %s DLing: %s%n", precentage, Thread.currentThread().getName(), x.get(i));
                 //System.out.println(precentage + "% DLing: " + x.get(i));
                 URL website = new URL(x.get(i));
                 String convertUrl = x.get(i).toString();
-                String completeDest = fileDestination + convertUrl.substring(21, convertUrl.length());
-                String tempDest = fileDestination + "Temp" + convertUrl.substring(21, convertUrl.length());
+                String completeDest = fileDestination + convertUrl.substring(settings.getExtensionCutoff(), convertUrl.length());
+                String tempDest = fileDestination + "Temp" + convertUrl.substring(settings.getExtensionCutoff(), convertUrl.length());
                 File destination = new File(tempDest);
                 FileUtils.copyURLToFile(website, destination);
                 Hasher hasherfunc = new Hasher(destination.toString(), "SHA1");
@@ -116,9 +125,9 @@ public abstract class ImgBoard extends Thread {
 
     abstract String webmCheck();
 
-    abstract String locThread();
+    abstract String locate4ch();
 
-    abstract int getThreadNum();
+    abstract String locate2ch();
 
 
 }
