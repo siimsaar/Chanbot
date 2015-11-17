@@ -1,6 +1,7 @@
 package gui;
 
 import core.Topic;
+import core.TopicRegex;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableListValue;
 import javafx.beans.value.ObservableValue;
@@ -34,18 +35,23 @@ public class Controller extends OutputStream implements Initializable {
 
 
     public void startThread(ActionEvent event) {
+        if(refreshInt.getText().isEmpty()) {
+            TopicRegex.setUpdateInt(1000);
+        } else {
+            TopicRegex.setUpdateInt(Integer.parseInt(refreshInt.getText()) * 1000);
+        }
         try {
             if (topicBox.getValue().equals("/mu/ - kpg")) {
-                Topic kek = new Topic("kpg", "./topics/", "./topics/kpg/catalogMu.json");
+                Topic kek = new Topic("kpg");
                 if (enableWEBM.isSelected()) {
                     kek.setWEBM();
                 }
                 kek.start();
             } else if (topicBox.getValue().equals("/p/ - Recent Photo")) {
-                Topic kuk = new Topic("p", "/home/ayy/dlthing/", "/home/ayy/dlthing/catalogP.json");
+                Topic kuk = new Topic("p");
                 kuk.start();
             } else if (topicBox.getValue().equals("/2ch/ - Webm Thread")) {
-            Topic kuk = new Topic("2webm", "/home/ayy/dlthing/", "/home/ayy/dlthing/catalogP.json");
+            Topic kuk = new Topic("2webm");
             kuk.start();
             }
         } catch (NullPointerException e) {

@@ -8,26 +8,17 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.io.File;
 import hashing.Hasher;
-import sun.security.provider.MD5;
-
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
 
 public abstract class ImgBoard extends Thread {
 
     final static String[] SUPPORTED_BOARDS = {"hr", "mu", "wg", "pol", "g", "p", "2webm", "kpg"};
-    final static String API_URL = "http://a.4cdn.org/";
-    final static String API_EXTENSION = "/catalog.json";
 
-    String fileDestination;
-    String apiDestination;
     String board;
 
-    public ImgBoard(String fileDestination, String apiDestination, String board) {
-        this.fileDestination = fileDestination;
-        this.apiDestination = apiDestination;
+    public ImgBoard(String board) {
         this.board = board;
         settings.setValues(board);
     }
@@ -39,7 +30,7 @@ public abstract class ImgBoard extends Thread {
         String boardLink = null;
         for (int i = 0; i < SUPPORTED_BOARDS.length; i++) {
             if (SUPPORTED_BOARDS[i].equals(board)) {
-                boardLink = API_URL + board + API_EXTENSION;
+                boardLink = settings.getApiUrl();
             }
         }
         if (boardLink.equals(null)) {
@@ -50,7 +41,7 @@ public abstract class ImgBoard extends Thread {
 
     void dlJSON() {
         try {
-            File dest = new File(apiDestination);
+            File dest = new File(settings.getApiDestination());
             URL JSON_API = new URL(locBoard());
             FileUtils.copyURLToFile(JSON_API, dest);
         } catch (SocketTimeoutException e) {
@@ -97,8 +88,8 @@ public abstract class ImgBoard extends Thread {
                 //System.out.println(precentage + "% DLing: " + x.get(i));
                 URL website = new URL(x.get(i));
                 String convertUrl = x.get(i).toString();
-                String completeDest = fileDestination + convertUrl.substring(settings.getExtensionCutoff(), convertUrl.length());
-                String tempDest = fileDestination + "Temp" + convertUrl.substring(settings.getExtensionCutoff(), convertUrl.length());
+                String completeDest = settings.getFileDestination() + convertUrl.substring(settings.getExtensionCutoff(), convertUrl.length());
+                String tempDest = settings.getFileDestination() + "Temp" + convertUrl.substring(settings.getExtensionCutoff(), convertUrl.length());
                 File destination = new File(tempDest);
                 FileUtils.copyURLToFile(website, destination);
                 Hasher hasherfunc = new Hasher(destination.toString(), "SHA1");
@@ -111,7 +102,7 @@ public abstract class ImgBoard extends Thread {
                     FileUtils.deleteQuietly(destination);
                 }
                 if (i == x.size() - 1) {
-                    System.out.printf("[SUCCESS] 100%% DLing Files are located in %s", fileDestination);
+                    System.out.printf("[SUCCESS] 100%% DLing Files are located in %s", settings.getFileDestination());
                 }
             }
         } catch (HttpStatusException e) {

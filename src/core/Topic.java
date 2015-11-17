@@ -16,8 +16,8 @@ public class Topic extends ImgBoard {
     int threadNum;
     boolean dlWEBM = false;
 
-    public Topic(String board, String fileDestination, String apiDestination) {
-        super(fileDestination, apiDestination, board);
+    public Topic(String board) {
+        super(board);
     }
 
     @Override
@@ -25,7 +25,7 @@ public class Topic extends ImgBoard {
         String dataString = null;
         try {
             UserAgent userAgent = new UserAgent();
-            userAgent.openJSON(new File(apiDestination));
+            userAgent.openJSON(new File(settings.apiDestination));
             JNode thread = userAgent.json.findEvery(settings.getPattern()).findEvery("no").get(0);
             dataString = thread.toString();
             if (dataString.equals("[]\n")) {
@@ -44,17 +44,21 @@ public class Topic extends ImgBoard {
             Document doc = Jsoup.connect(settings.getUrl()).maxBodySize(0).timeout(0).get();
             Element link = doc.select(settings.getPattern()).not(settings.getNotPattern()).first();
             String threadID = link.toString().substring(0, settings.getTopicLength()).replaceAll("[^0-9]", "");
-            if(threadID.equals("")) {
+            System.out.println(threadID);
+            if(threadID.isEmpty()) {
+                System.out.println("empty, retrying");
+                locate2ch();
             }
-            return (settings.getUrl() + "/res/" + threadID + ".html");
+            return (settings.getUrl() + "res/" + threadID + ".html");
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
 
     private void checkIfRunning() {
         if(ThreadManager.runningTopics.contains(board)) {
-            System.out.println("[ERROR] Topic is already being watched]");
+            System.out.printf("%n[ERROR] Topic is already being watched]%n");
             Thread.currentThread().interrupt();
         }
     }
@@ -69,16 +73,21 @@ public class Topic extends ImgBoard {
 
     @Override
     public void run() {
-        checkIfRunning();
-        if (!Thread.interrupted()) {
-            ThreadManager.runningTopics.add(board);
-            System.out.println("[INFO] Starting " + Thread.currentThread().getName());
-            setThreadNum();
-            if(settings.isJsonApi()) {
-                dlJSON();
+        try {
+            checkIfRunning();
+            while (!Thread.interrupted()) {
+                ThreadManager.runningTopics.add(board);
+                System.out.println("[INFO] Starting " + Thread.currentThread().getName() + " Updating every: " + settings.getUpdateInt() / 1000 + "s");
+                setThreadNum();
+                if (settings.isJsonApi()) {
+                    dlJSON();
+                }
+                dlPictures(getLinks());
+                Thread.sleep(settings.getUpdateInt());
             }
-            dlPictures(getLinks());
             ThreadManager.runningTopics.remove(board);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

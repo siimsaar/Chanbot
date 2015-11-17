@@ -6,16 +6,21 @@ import java.util.List;
 
 public class TopicRegex {
 
-    private String pickedtopic;
+    public String fileDestination = "./";
+    public String apiDestination = "./api_";
+    public String hashDestination = "./";
+
     private String boardn;
     private String pattern;
     private String url;
     private String prefix = "http:";
     private String notPattern;
     private String imgBoard;
+    private String apiUrl;
     private boolean jsonApi = false;
     private int topicLength;
     private int extensionCutoff;
+    static private int updateInt;
 
     public void setValues(String boardName) {
         switch (boardName) {
@@ -26,6 +31,7 @@ public class TopicRegex {
                 url = "http://boards.4chan.org/mu/thread/";
                 extensionCutoff = 21;
                 boardn = "mu";
+                apiUrl = "http://a.4cdn.org/" + boardn + "/catalog.json";
                 break;
             case "p":
                 pattern = "{sub: RECENT PHOTO THREAD}";
@@ -45,6 +51,8 @@ public class TopicRegex {
                 extensionCutoff = 32;
                 break;
         }
+        fileDestination = fileDestination + "/" + boardName + "/";
+        apiDestination = apiDestination + getBoard();
     }
 
     public String getPattern() {
@@ -53,10 +61,6 @@ public class TopicRegex {
 
     public String getBoard() {
         return boardn;
-    }
-
-    public String getPickedtopic() {
-        return pickedtopic;
     }
 
     public String getUrl() {
@@ -83,5 +87,29 @@ public class TopicRegex {
     }
     public String getPrefix() {
         return  prefix;
+    }
+
+    public String getFileDestination() {
+        return fileDestination;
+    }
+
+    public String getApiDestination() {
+        return apiDestination;
+    }
+
+    public String getHashDestination() {
+        return hashDestination;
+    }
+
+    public String getApiUrl() {
+        return apiUrl;
+    }
+
+    public int getUpdateInt() {
+        return updateInt;
+    }
+
+    static public void setUpdateInt(int value) {
+        updateInt = value;
     }
 }

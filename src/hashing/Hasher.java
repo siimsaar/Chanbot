@@ -1,5 +1,6 @@
 package hashing;
 
+import core.TopicRegex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 
@@ -8,6 +9,8 @@ import java.io.FileInputStream;
 import java.util.Scanner;
 
 public class Hasher {
+
+    TopicRegex settings = new TopicRegex();
 
     final String newLine = System.getProperty("line.separator");
 
