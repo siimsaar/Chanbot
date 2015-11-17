@@ -14,7 +14,7 @@ import java.io.File;
 public class Topic extends ImgBoard {
 
     int threadNum;
-    boolean dlWEBM = false;
+    String dlWEBM = "default";
 
     public Topic(String board) {
         super(board);
@@ -44,7 +44,6 @@ public class Topic extends ImgBoard {
             Document doc = Jsoup.connect(settings.getUrl()).maxBodySize(0).timeout(0).get();
             Element link = doc.select(settings.getPattern()).not(settings.getNotPattern()).first();
             String threadID = link.toString().substring(0, settings.getTopicLength()).replaceAll("[^0-9]", "");
-            System.out.println(threadID);
             if(threadID.isEmpty()) {
                 System.out.println("empty, retrying");
                 locate2ch();
@@ -58,17 +57,20 @@ public class Topic extends ImgBoard {
 
     private void checkIfRunning() {
         if(ThreadManager.runningTopics.contains(board)) {
-            System.out.printf("%n[ERROR] Topic is already being watched]%n");
+            System.out.printf("%n[ERROR] Topic %s is already being watched", board);
             Thread.currentThread().interrupt();
         }
     }
 
     String webmCheck() {;
-        if (dlWEBM) {
+        if (dlWEBM.equals("default")) {
             return "a[href~=(?i)\\.(png|jpe?g|webm)]:not(a[class])";
-        } else {
+        } else if (dlWEBM.equals("pluswebm")) {
             return "a[href~=(?i)\\.(png|jpe?g)]:not(a[class])";
+        } else if (dlWEBM.equals("webm")) {
+            return "a[href~=(?i)\\.(webm)]:not(a[class])";
         }
+        return null;
     }
 
     @Override
@@ -85,7 +87,6 @@ public class Topic extends ImgBoard {
                 dlPictures(getLinks());
                 Thread.sleep(settings.getUpdateInt());
             }
-            ThreadManager.runningTopics.remove(board);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -99,8 +100,12 @@ public class Topic extends ImgBoard {
         return threadNum;
     }
 
-    public void setWEBM() {
-        dlWEBM = true;
+    public void onlyWEBM() {
+        dlWEBM = "webm";
+    }
+
+    public void includeWEBM() {
+        dlWEBM = "pluswebm";
     }
 
 }

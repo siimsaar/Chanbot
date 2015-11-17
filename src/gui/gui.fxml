@@ -15,13 +15,13 @@
             <Font size="14.0" />
          </font>
       </Button>
-      <Text layoutX="128.0" layoutY="78.0" strokeType="OUTSIDE" strokeWidth="0.0" text="x_x" wrappingWidth="287.126953125">
+      <Text layoutX="28.0" layoutY="91.0" strokeType="OUTSIDE" strokeWidth="0.0" text="bot_thing" wrappingWidth="262.99999737739563">
          <font>
-            <Font name="Ubuntu" size="34.0" />
+            <Font name="Ubuntu" size="57.0" />
          </font>
       </Text>
       <TextArea fx:id="stdout" layoutX="14.0" layoutY="154.0" prefHeight="231.0" prefWidth="571.0" />
-      <Text layoutX="10.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="v0.04" wrappingWidth="35.126953125" />
+      <Text layoutX="10.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="v0.05" wrappingWidth="35.126953125" />
       <Text layoutX="416.0" layoutY="43.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Select topic to watch" wrappingWidth="133.126953125" />
       <CheckBox fx:id="enableWEBM" layoutX="416.0" layoutY="86.0" mnemonicParsing="false" text="Download WEBM" />
       <ComboBox fx:id="topicBox" layoutX="408.0" layoutY="52.0" prefWidth="150.0" promptText="Pick your poison" />
@@ -29,11 +29,6 @@
          <font>
             <Font size="10.0" />
          </font></TextField>
-      <ImageView fitHeight="75.0" fitWidth="59.0" layoutX="55.0" layoutY="47.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../Downloads/tartan_74e368ee28b85e5c824296f21c13e242.png" />
-         </image>
-      </ImageView>
-      <Text layoutX="128.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" text="does it even work?" wrappingWidth="168.126953125" />
+      <Text layoutX="160.0" layoutY="109.0" strokeType="OUTSIDE" strokeWidth="0.0" text="you're lucky if it works!" wrappingWidth="168.126953125" />
    </children>
 </Pane>

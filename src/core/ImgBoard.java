@@ -69,6 +69,14 @@ public abstract class ImgBoard extends Thread {
             System.out.println("[ERROR] " + Thread.currentThread().getName() + " Failed to locate thread");
             x.printStackTrace();
             Thread.interrupted();
+        } catch (NullPointerException e) {
+            try {
+                System.out.println("[ERROR] Thread doesn't exist, trying again");
+                Thread.sleep(5000);
+                dlPictures(getLinks());
+            } catch (InterruptedException i) {
+                System.out.println("[CRITICAL] Nothing works anymore");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

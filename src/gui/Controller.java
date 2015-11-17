@@ -44,7 +44,7 @@ public class Controller extends OutputStream implements Initializable {
             if (topicBox.getValue().equals("/mu/ - kpg")) {
                 Topic kek = new Topic("kpg");
                 if (enableWEBM.isSelected()) {
-                    kek.setWEBM();
+                    kek.includeWEBM();
                 }
                 kek.start();
             } else if (topicBox.getValue().equals("/p/ - Recent Photo")) {
@@ -52,6 +52,7 @@ public class Controller extends OutputStream implements Initializable {
                 kuk.start();
             } else if (topicBox.getValue().equals("/2ch/ - Webm Thread")) {
             Topic kuk = new Topic("2webm");
+                kuk.onlyWEBM();
             kuk.start();
             }
         } catch (NullPointerException e) {
@@ -59,6 +60,7 @@ public class Controller extends OutputStream implements Initializable {
             System.out.println("[WARNING] Pick a topic!");
         }
     }
+
 
     //this is from stackoverflow, i have no idea how it works
     @Override

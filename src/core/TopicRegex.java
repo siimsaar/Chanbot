@@ -50,6 +50,9 @@ public class TopicRegex {
                 topicLength = 50;
                 extensionCutoff = 32;
                 break;
+            default:
+                System.out.println("[ERROR] Invalid board");
+                Thread.currentThread().interrupt();
         }
         fileDestination = fileDestination + "/" + boardName + "/";
         apiDestination = apiDestination + getBoard();
