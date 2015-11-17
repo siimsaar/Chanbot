@@ -1,12 +1,8 @@
 package gui;
 
 import core.Topic;
-import core.TopicRegex;
+import core.SettingsHandler;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableListValue;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -16,7 +12,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 
@@ -36,9 +31,9 @@ public class Controller extends OutputStream implements Initializable {
 
     public void startThread(ActionEvent event) {
         if(refreshInt.getText().isEmpty()) {
-            TopicRegex.setUpdateInt(1000);
+            SettingsHandler.setUpdateInt(1000);
         } else {
-            TopicRegex.setUpdateInt(Integer.parseInt(refreshInt.getText()) * 1000);
+            SettingsHandler.setUpdateInt(Integer.parseInt(refreshInt.getText()) * 1000);
         }
         try {
             if (topicBox.getValue().equals("/mu/ - kpg")) {
@@ -53,6 +48,7 @@ public class Controller extends OutputStream implements Initializable {
             } else if (topicBox.getValue().equals("/2ch/ - Webm Thread")) {
             Topic kuk = new Topic("2webm");
                 kuk.onlyWEBM();
+                enableWEBM.fire();
             kuk.start();
             }
         } catch (NullPointerException e) {

@@ -23,7 +23,7 @@ public abstract class ImgBoard extends Thread {
         settings.setValues(board);
     }
 
-    protected TopicRegex settings = new TopicRegex();
+    protected SettingsHandler settings = new SettingsHandler();
 
 
     String locBoard() {
@@ -65,11 +65,7 @@ public abstract class ImgBoard extends Thread {
             for (Element x : links) {
                 elemnlist.add(settings.getPrefix() + x.attr("href"));
             }
-        } catch (HttpStatusException x) {
-            System.out.println("[ERROR] " + Thread.currentThread().getName() + " Failed to locate thread");
-            x.printStackTrace();
-            Thread.interrupted();
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | HttpStatusException | IllegalArgumentException ex) {
             try {
                 System.out.println("[ERROR] Thread doesn't exist, trying again");
                 Thread.sleep(5000);

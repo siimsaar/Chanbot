@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TopicRegex {
+public class SettingsHandler {
 
     public String fileDestination = "./";
     public String apiDestination = "./api_";
