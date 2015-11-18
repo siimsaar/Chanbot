@@ -17,9 +17,10 @@ public class SettingsHandler {
     private String notPattern;
     private String imgBoard;
     private String apiUrl;
+    private int maxPages = 5;
     private boolean jsonApi = false;
-    private int topicLength;
-    private int extensionCutoff;
+    private int topicLength = 60;
+    private int extensionCutoff = 21;
     static private int updateInt;
 
     public void setValues(String boardName) {
@@ -49,6 +50,7 @@ public class SettingsHandler {
                 prefix = "https://2ch.hk/";
                 topicLength = 50;
                 extensionCutoff = 32;
+                maxPages = 6;
                 break;
             default:
                 System.out.println("[ERROR] Invalid board");
@@ -110,6 +112,10 @@ public class SettingsHandler {
 
     public int getUpdateInt() {
         return updateInt;
+    }
+
+    public int getMaxPages() {
+        return maxPages;
     }
 
     static public void setUpdateInt(int value) {

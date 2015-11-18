@@ -10,10 +10,12 @@ import org.jsoup.select.Elements;
 import threads.ThreadManager;
 
 import java.io.File;
+import java.io.IOException;
 
 public class Topic extends ImgBoard {
 
     int threadNum;
+    int tryCount = 0;
     String dlWEBM = "default";
 
     public Topic(String board) {
@@ -38,21 +40,28 @@ public class Topic extends ImgBoard {
         }
         return dataString;
     }
-
     public String locate2ch() {
-        try {
-            Document doc = Jsoup.connect(settings.getUrl()).maxBodySize(0).timeout(0).get();
-            Element link = doc.select(settings.getPattern()).not(settings.getNotPattern()).first();
-            String threadID = link.toString().substring(0, settings.getTopicLength()).replaceAll("[^0-9]", "");
-            if(threadID.isEmpty()) {
-                System.out.println("empty, retrying");
-                locate2ch();
+        tryCount = 0;
+        while(tryCount < settings.getMaxPages()) {
+            try {
+                Document doc = Jsoup.connect(settings.getUrl() + pageIterator()).maxBodySize(0).timeout(0).get();
+                Element link = doc.select(settings.getPattern()).not(settings.getNotPattern()).first();
+                String threadID = link.toString().substring(0, settings.getTopicLength()).replaceAll("[^0-9]", "");
+                return (settings.getUrl() + "res/" + threadID + ".html");
+            } catch (NullPointerException | IOException er) {
+                System.out.println(pageIterator());
+                tryCount++;
             }
-            return (settings.getUrl() + "res/" + threadID + ".html");
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return null;
+    }
+
+    String pageIterator() {
+        if (tryCount == 0) {
+            return "";
+        } else {
+            return tryCount + ".html";
+        }
     }
 
     private void checkIfRunning() {

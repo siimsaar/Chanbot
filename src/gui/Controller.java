@@ -31,7 +31,7 @@ public class Controller extends OutputStream implements Initializable {
 
     public void startThread(ActionEvent event) {
         if(refreshInt.getText().isEmpty()) {
-            SettingsHandler.setUpdateInt(1000);
+            SettingsHandler.setUpdateInt(10000);
         } else {
             SettingsHandler.setUpdateInt(Integer.parseInt(refreshInt.getText()) * 1000);
         }
