@@ -11,6 +11,8 @@ import threads.ThreadManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Topic extends ImgBoard {
 
@@ -27,8 +29,8 @@ public class Topic extends ImgBoard {
         String dataString = null;
         try {
             UserAgent userAgent = new UserAgent();
-            userAgent.openJSON(new File(settings.apiDestination));
-            JNode thread = userAgent.json.findEvery(settings.getPattern()).findEvery("no").get(0);
+            userAgent.openJSON(new File(conf.apiDestination));
+            JNode thread = userAgent.json.findEvery(conf.getPattern()).findEvery("no").get(0);
             dataString = thread.toString();
             if (dataString.equals("[]\n")) {
                 System.out.println("[ERROR] Couldnt find the thread");
@@ -42,12 +44,12 @@ public class Topic extends ImgBoard {
     }
     public String locate2ch() {
         tryCount = 0;
-        while(tryCount < settings.getMaxPages()) {
+        while(tryCount < conf.getMaxPages()) {
             try {
-                Document doc = Jsoup.connect(settings.getUrl() + pageIterator()).maxBodySize(0).timeout(0).get();
-                Element link = doc.select(settings.getPattern()).not(settings.getNotPattern()).first();
-                String threadID = link.toString().substring(0, settings.getTopicLength()).replaceAll("[^0-9]", "");
-                return (settings.getUrl() + "res/" + threadID + ".html");
+                Document doc = Jsoup.connect(conf.getUrl() + pageIterator()).maxBodySize(0).timeout(0).get();
+                Element link = doc.select(conf.getPattern()).not(conf.getNotPattern()).first();
+                String threadID = link.toString().substring(0, conf.getTopicLength()).replaceAll("[^0-9]", "");
+                return (conf.getUrl() + "res/" + threadID + ".html");
             } catch (NullPointerException | IOException er) {
                 System.out.println(pageIterator());
                 tryCount++;
@@ -73,9 +75,9 @@ public class Topic extends ImgBoard {
 
     String webmCheck() {;
         if (dlWEBM.equals("default")) {
-            return "a[href~=(?i)\\.(png|jpe?g|webm)]:not(a[class])";
-        } else if (dlWEBM.equals("pluswebm")) {
             return "a[href~=(?i)\\.(png|jpe?g)]:not(a[class])";
+        } else if (dlWEBM.equals("pluswebm")) {
+            return "a[href~=(?i)\\.(png|jpe?g|webm)]:not(a[class])";
         } else if (dlWEBM.equals("webm")) {
             return "a[href~=(?i)\\.(webm)]:not(a[class])";
         }
@@ -88,13 +90,13 @@ public class Topic extends ImgBoard {
             checkIfRunning();
             while (!Thread.interrupted()) {
                 ThreadManager.runningTopics.add(board);
-                System.out.println("[INFO] Starting " + Thread.currentThread().getName() + " Updating every: " + settings.getUpdateInt() / 1000 + "s");
+                System.out.println("[INFO] Starting " + Thread.currentThread().getName() + " Updating every: " + conf.getUpdateInt() / 1000 + "s");
                 setThreadNum();
-                if (settings.isJsonApi()) {
+                if (conf.isJsonApi()) {
                     dlJSON();
                 }
                 dlPictures(getLinks());
-                Thread.sleep(settings.getUpdateInt());
+                Thread.sleep(conf.getUpdateInt());
             }
         } catch (Exception e) {
             e.printStackTrace();

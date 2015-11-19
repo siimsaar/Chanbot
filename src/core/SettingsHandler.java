@@ -1,14 +1,15 @@
 package core;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class SettingsHandler {
 
-    public String fileDestination = "./";
+    public String fileDestination = Paths.get(".").toAbsolutePath().normalize().toString();
     public String apiDestination = "./api_";
-    public String hashDestination = "./";
+    public String hashDestination = Paths.get(".").toAbsolutePath().normalize().toString() + "hashes.txt";
 
     private String boardn;
     private String pattern;

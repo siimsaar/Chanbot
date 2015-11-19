@@ -6,6 +6,9 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Hasher {
@@ -14,18 +17,25 @@ public class Hasher {
 
     final String newLine = System.getProperty("line.separator");
 
-    String filePath;
+    Path filePath;
     String hashType;
 
-    public Hasher(String filePath, String hashType) {
+    public Hasher(Path filePath, String hashType) {
         this.filePath = filePath;
         this.hashType = hashType;
+        if (!Files.exists(Paths.get("hashes.txt"))) {
+            try {
+                Files.createFile(Paths.get("hashes.txt"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private String generateMD5() {
         String genHash = null;
         try {
-            genHash = DigestUtils.md5Hex(new FileInputStream(filePath));
+            genHash = DigestUtils.md5Hex(Files.newInputStream(filePath));
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -35,7 +45,7 @@ public class Hasher {
     private String generateSHA1() {
         String genHash = null;
         try {
-            genHash = DigestUtils.sha1Hex(new FileInputStream(filePath));
+            genHash = DigestUtils.sha1Hex(Files.newInputStream(filePath));
         } catch (Exception e) {
             System.out.println(e);
         }

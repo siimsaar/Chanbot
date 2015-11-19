@@ -1,5 +1,6 @@
 package core;
 
+import hashing.TempFS;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -10,6 +11,10 @@ import java.io.File;
 import hashing.Hasher;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 
 public abstract class ImgBoard extends Thread {
@@ -17,20 +22,22 @@ public abstract class ImgBoard extends Thread {
     final static String[] SUPPORTED_BOARDS = {"hr", "mu", "wg", "pol", "g", "p", "2webm", "kpg"};
 
     String board;
+    TempFS memfs;
+    int precentage;
 
     public ImgBoard(String board) {
         this.board = board;
-        settings.setValues(board);
+        conf.setValues(board);
     }
 
-    protected SettingsHandler settings = new SettingsHandler();
+    protected SettingsHandler conf = new SettingsHandler();
 
 
     String locBoard() {
         String boardLink = null;
         for (int i = 0; i < SUPPORTED_BOARDS.length; i++) {
             if (SUPPORTED_BOARDS[i].equals(board)) {
-                boardLink = settings.getApiUrl();
+                boardLink = conf.getApiUrl();
             }
         }
         if (boardLink.equals(null)) {
@@ -41,7 +48,7 @@ public abstract class ImgBoard extends Thread {
 
     void dlJSON() {
         try {
-            File dest = new File(settings.getApiDestination());
+            File dest = new File(conf.getApiDestination());
             URL JSON_API = new URL(locBoard());
             FileUtils.copyURLToFile(JSON_API, dest);
         } catch (SocketTimeoutException e) {
@@ -55,15 +62,15 @@ public abstract class ImgBoard extends Thread {
         ArrayList<String> elemnlist = new ArrayList<>();
         Document doc = null;
         try {
-            if(settings.getImgBoard().equals("4ch")) {
-                doc = Jsoup.connect(settings.getUrl() + locate4ch()).get();
-            } else if (settings.getImgBoard().equals("2ch")) {
+            if(conf.getImgBoard().equals("4ch")) {
+                doc = Jsoup.connect(conf.getUrl() + locate4ch()).get();
+            } else if (conf.getImgBoard().equals("2ch")) {
                 doc = Jsoup.connect(locate2ch()).get();
             }
             //Document doc = Jsoup.connect(locate4ch()).get();
             Elements links = doc.select(webmCheck());
             for (Element x : links) {
-                elemnlist.add(settings.getPrefix() + x.attr("href"));
+                elemnlist.add(conf.getPrefix() + x.attr("href"));
             }
         } catch (NullPointerException | HttpStatusException | IllegalArgumentException ex) {
             try {
@@ -81,7 +88,6 @@ public abstract class ImgBoard extends Thread {
 
 
     void dlPictures(ArrayList<String> x) {
-        int precentage;
         try {
             for (int i = 0; i < x.size(); i++) {
                 if (i == 0) {
@@ -89,30 +95,31 @@ public abstract class ImgBoard extends Thread {
                 }
                 precentage = (i * 100 / x.size());
                 System.out.printf("[INFO] %d %% %s DLing: %s%n", precentage, Thread.currentThread().getName(), x.get(i));
-                //System.out.println(precentage + "% DLing: " + x.get(i));
+                memfs = new TempFS(Paths.get(conf.getFileDestination()));
                 URL website = new URL(x.get(i));
-                String convertUrl = x.get(i).toString();
-                String completeDest = settings.getFileDestination() + convertUrl.substring(settings.getExtensionCutoff(), convertUrl.length());
-                String tempDest = settings.getFileDestination() + "Temp" + convertUrl.substring(settings.getExtensionCutoff(), convertUrl.length());
-                File destination = new File(tempDest);
-                FileUtils.copyURLToFile(website, destination);
-                Hasher hasherfunc = new Hasher(destination.toString(), "SHA1");
-                if(hasherfunc.checkHashes()) {
-                    FileUtils.deleteQuietly(destination);
-                } else {
+                String url = x.get(i);
+                memfs.storeInMemory(website);
+                Hasher hasherfunc = new Hasher(memfs.getFileLocation(), "SHA1");
+                if(!hasherfunc.checkHashes()) {
+                    Path completeDest = Paths.get(conf.getFileDestination() + url.substring(conf.getExtensionCutoff(), url.length()));
+                    if(!Files.exists(completeDest.getParent())) {
+                        Files.createDirectory(completeDest.getParent());
+                    }
+                    Files.copy(memfs.getFileLocation(), completeDest, StandardCopyOption.REPLACE_EXISTING);
                     hasherfunc.saveHash();
-                    File fdestination = new File (completeDest);
-                    FileUtils.copyFile(destination,fdestination);
-                    FileUtils.deleteQuietly(destination);
+                    Files.deleteIfExists(Paths.get("./temp/tempfile" + Thread.currentThread().getId()));
                 }
+                memfs.flushFS();
                 if (i == x.size() - 1) {
-                    System.out.printf("[SUCCESS] 100%% DLing Files are located in %s", settings.getFileDestination());
+                    System.out.printf("[SUCCESS] 100%% DLing Files are located in %s", conf.getFileDestination());
                 }
             }
         } catch (HttpStatusException e) {
             System.exit(1);
         } catch (Exception e) {
             System.out.println(e);
+        } finally {
+            memfs.flushFS();
         }
     }
 
