@@ -1,6 +1,6 @@
 package core;
 
-import hashing.TempFS;
+import hashing.ramFilesys;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -22,7 +22,7 @@ public abstract class ImgBoard extends Thread {
     final static String[] SUPPORTED_BOARDS = {"hr", "mu", "wg", "pol", "g", "p", "2webm", "kpg"};
 
     String board;
-    TempFS memfs;
+    ramFilesys memfs;
     int precentage;
 
     public ImgBoard(String board) {
@@ -40,8 +40,8 @@ public abstract class ImgBoard extends Thread {
                 boardLink = conf.getApiUrl();
             }
         }
-        if (boardLink.equals(null)) {
-            System.err.println("[ERROR] You shouldn't have this error");
+        if (boardLink == null) {
+            System.out.println("[ERROR] Board isn't JSON enabled");
         }
         return boardLink;
     }
@@ -54,7 +54,9 @@ public abstract class ImgBoard extends Thread {
         } catch (SocketTimeoutException e) {
             System.out.println("[ERROR] Site is down or you're not connected");
         } catch (Exception e) {
+            System.out.println("[ERROR] Unidentified error");
             System.out.println(locBoard());
+            e.printStackTrace();
         }
     }
 
@@ -67,8 +69,7 @@ public abstract class ImgBoard extends Thread {
             } else if (conf.getImgBoard().equals("2ch")) {
                 doc = Jsoup.connect(locate2ch()).get();
             }
-            //Document doc = Jsoup.connect(locate4ch()).get();
-            Elements links = doc.select(webmCheck());
+                Elements links = doc.select(webmCheck());
             for (Element x : links) {
                 elemnlist.add(conf.getPrefix() + x.attr("href"));
             }
@@ -76,11 +77,15 @@ public abstract class ImgBoard extends Thread {
             try {
                 System.out.println("[ERROR] Thread doesn't exist, trying again");
                 Thread.sleep(5000);
+                if (conf.isJsonApi()) {
+                    dlJSON();
+                }
                 dlPictures(getLinks());
             } catch (InterruptedException i) {
-                System.out.println("[CRITICAL] Nothing works anymore");
+                System.out.println("[ERROR] Unrecoverable error");
             }
         } catch (Exception e) {
+            System.out.println("[ERROR] Unidentified error");
             e.printStackTrace();
         }
         return elemnlist;
@@ -95,19 +100,21 @@ public abstract class ImgBoard extends Thread {
                 }
                 precentage = (i * 100 / x.size());
                 System.out.printf("[INFO] %d %% %s DLing: %s%n", precentage, Thread.currentThread().getName(), x.get(i));
-                memfs = new TempFS(Paths.get(conf.getFileDestination()));
+                memfs = new ramFilesys(Paths.get(conf.getFileDestination()));
                 URL website = new URL(x.get(i));
                 String url = x.get(i);
                 memfs.storeInMemory(website);
+                if(memfs.getFileLocation() != null) {
                 Hasher hasherfunc = new Hasher(memfs.getFileLocation(), "SHA1");
                 if(!hasherfunc.checkHashes()) {
                     Path completeDest = Paths.get(conf.getFileDestination() + url.substring(conf.getExtensionCutoff(), url.length()));
-                    if(!Files.exists(completeDest.getParent())) {
+                    if (!Files.exists(completeDest.getParent())) {
                         Files.createDirectory(completeDest.getParent());
                     }
                     Files.copy(memfs.getFileLocation(), completeDest, StandardCopyOption.REPLACE_EXISTING);
                     hasherfunc.saveHash();
                     Files.deleteIfExists(Paths.get("./temp/tempfile" + Thread.currentThread().getId()));
+                }
                 }
                 memfs.flushFS();
                 if (i == x.size() - 1) {
@@ -115,9 +122,11 @@ public abstract class ImgBoard extends Thread {
                 }
             }
         } catch (HttpStatusException e) {
-            System.exit(1);
+            System.out.println("[ERROR] Unrecoverable error");
+            e.printStackTrace();
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println("[ERROR] Unidentified error");
+            e.printStackTrace();
         } finally {
             memfs.flushFS();
         }
