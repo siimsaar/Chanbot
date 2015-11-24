@@ -16,7 +16,7 @@ public class Gui extends Application {
     @Override
     public void start(Stage stage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("gui.fxml"));
-        stage.setTitle("ChanMux");
+        stage.setTitle("ChanBot");
         stage.setScene(new Scene(root, 600, 400));
         stage.show();
         stage.setResizable(false);

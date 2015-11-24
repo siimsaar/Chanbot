@@ -66,13 +66,6 @@ public class Topic extends ImgBoard {
         }
     }
 
-    private void checkIfRunning() {
-        if(ThreadManager.runningTopics.contains(board)) {
-            System.out.printf("%n[ERROR] Topic %s is already being watched", board);
-            Thread.currentThread().interrupt();
-        }
-    }
-
     String webmCheck() {;
         if (dlWEBM.equals("default")) {
             return "a[href~=(?i)\\.(png|jpe?g)]:not(a[class])";
@@ -86,20 +79,37 @@ public class Topic extends ImgBoard {
 
     @Override
     public void run() {
+        if(streaming) {
+        stream();
+            Thread.currentThread().interrupt();
+        }
         try {
-            checkIfRunning();
             while (!Thread.interrupted()) {
-                ThreadManager.runningTopics.add(board);
-                System.out.println("[INFO] Starting " + Thread.currentThread().getName() + " Updating every: " + conf.getUpdateInt() / 1000 + "s");
+                System.out.println("[INFO] Starting " + Thread.currentThread().getName().toLowerCase() + " updating every: " + conf.getUpdateInt() / 1000 + "s");
                 setThreadNum();
                 if (conf.isJsonApi()) {
                     dlJSON();
                 }
                 dlPictures(getLinks());
-                Thread.sleep(conf.getUpdateInt());
+               Thread.sleep(conf.getUpdateInt());
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void stream() {
+        try {
+            System.out.println("[INFO] Starting streaming from " + board);
+            setThreadNum();
+            if (conf.isJsonApi()) {
+                dlJSON();
+            }
+            streamWebm(getLinks());
+            Thread.currentThread().interrupt();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("[ERROR] Streaming init failed");
         }
     }
 
@@ -118,5 +128,7 @@ public class Topic extends ImgBoard {
     public void includeWEBM() {
         dlWEBM = "pluswebm";
     }
+
+    public void enableStreaming() { streaming = true; }
 
 }

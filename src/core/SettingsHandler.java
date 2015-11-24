@@ -15,12 +15,12 @@ public class SettingsHandler {
     private String pattern;
     private String url;
     private String prefix = "http:";
-    private String notPattern;
+    private String notPattern = ":contains(null)";
     private String imgBoard;
     private String apiUrl;
     private int maxPages = 5;
     private boolean jsonApi = false;
-    private int topicLength = 60;
+    private int topicLength = 50;
     private int extensionCutoff = 21;
     static private int updateInt;
 
@@ -49,8 +49,16 @@ public class SettingsHandler {
                 url = "https://2ch.hk/b/";
                 boardn = "b";
                 prefix = "https://2ch.hk/";
-                topicLength = 50;
                 extensionCutoff = 32;
+                maxPages = 6;
+                break;
+            case "rukpg":
+                imgBoard = "2ch";
+                pattern = "blockquote:matches((?i)Вечноживой)";
+                url = "https://2ch.hk/kpop/";
+                boardn = "kpop";
+                prefix = "https://2ch.hk/";
+                extensionCutoff = 28;
                 maxPages = 6;
                 break;
             default:

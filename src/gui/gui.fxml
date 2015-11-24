@@ -10,7 +10,7 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
    <children>
-      <Button fx:id="startButton" layoutX="498.0" layoutY="113.0" mnemonicParsing="false" onAction="#startThread" prefHeight="30.0" prefWidth="59.0" text="Start">
+      <Button fx:id="startButton" defaultButton="true" layoutX="486.0" layoutY="113.0" mnemonicParsing="false" onAction="#startThread" prefHeight="30.0" prefWidth="98.0" text="Download">
          <font>
             <Font size="14.0" />
          </font>
@@ -21,14 +21,24 @@
          </font>
       </Text>
       <TextArea fx:id="stdout" layoutX="14.0" layoutY="154.0" prefHeight="231.0" prefWidth="571.0" />
-      <Text layoutX="10.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="v0.07" wrappingWidth="35.126953125" />
-      <Text layoutX="416.0" layoutY="43.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Select topic to watch" wrappingWidth="133.126953125" />
-      <CheckBox fx:id="enableWEBM" layoutX="416.0" layoutY="86.0" mnemonicParsing="false" text="Download WEBM" />
-      <ComboBox fx:id="topicBox" layoutX="408.0" layoutY="52.0" prefWidth="150.0" promptText="Pick your poison" />
-      <TextField fx:id="refreshInt" layoutX="408.0" layoutY="114.0" prefHeight="30.0" prefWidth="80.0" promptText="Interval (sec)">
+      <Text layoutX="10.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="v0.08" wrappingWidth="35.126953125" />
+      <CheckBox fx:id="enableWEBM" layoutX="472.0" layoutY="59.0" mnemonicParsing="false" onAction="#setWEBM" text="Include .webm" />
+      <ComboBox fx:id="topicBox" layoutX="435.0" layoutY="24.0" prefWidth="150.0" promptText="Pick your poison" />
+      <TextField fx:id="refreshInt" layoutX="500.0" layoutY="84.0" prefHeight="18.0" prefWidth="80.0" promptText="Interval (sec)">
          <font>
             <Font size="10.0" />
          </font></TextField>
       <Text layoutX="160.0" layoutY="109.0" strokeType="OUTSIDE" strokeWidth="0.0" text="you're lucky if it works!" wrappingWidth="168.126953125" />
+      <Button fx:id="streamButton" layoutX="401.0" layoutY="113.0" mnemonicParsing="false" onAction="#streamTo" prefHeight="30.0" prefWidth="80.0" text="Stream" textFill="#027252">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <Text layoutX="401.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Update period:" />
+      <Button fx:id="killButton" layoutX="335.0" layoutY="113.0" mnemonicParsing="false" onAction="#killAll" prefHeight="30.0" prefWidth="61.0" text="Stop" textFill="#d30000">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
    </children>
 </Pane>

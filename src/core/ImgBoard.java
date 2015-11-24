@@ -1,6 +1,8 @@
 package core;
 
 import hashing.ramFilesys;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -11,6 +13,7 @@ import java.io.File;
 import hashing.Hasher;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.nio.channels.ClosedByInterruptException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,11 +22,12 @@ import java.util.ArrayList;
 
 public abstract class ImgBoard extends Thread {
 
-    final static String[] SUPPORTED_BOARDS = {"hr", "mu", "wg", "pol", "g", "p", "2webm", "kpg"};
+    final static String[] SUPPORTED_BOARDS = {"hr", "mu", "wg", "pol", "g", "p", "2webm", "kpg", "rukpg"};
 
     String board;
     ramFilesys memfs;
     int precentage;
+    boolean streaming = false;
 
     public ImgBoard(String board) {
         this.board = board;
@@ -80,7 +84,11 @@ public abstract class ImgBoard extends Thread {
                 if (conf.isJsonApi()) {
                     dlJSON();
                 }
-                dlPictures(getLinks());
+                if(streaming) {
+                    streamWebm(getLinks());
+                } else {
+                    dlPictures(getLinks());
+                }
             } catch (InterruptedException i) {
                 System.out.println("[ERROR] Unrecoverable error");
             }
@@ -89,6 +97,23 @@ public abstract class ImgBoard extends Thread {
             e.printStackTrace();
         }
         return elemnlist;
+    }
+
+    void streamWebm(ArrayList<String> linkList) {
+        String links = "";
+        try {
+            for(int i = linkList.size() - 1; i > 0; i--) {
+                links += linkList.get(i) + " ";
+            }
+            System.out.println("[INFO] Streaming " + linkList.size() + " webms");
+            String processName = "mpv " + links + " ";
+            CommandLine cmdProcess = CommandLine.parse(processName);
+            DefaultExecutor executor = new DefaultExecutor();
+            executor.execute(cmdProcess);
+            //Runtime.getRuntime().exec("bash mpv " + links);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -104,25 +129,27 @@ public abstract class ImgBoard extends Thread {
                 URL website = new URL(x.get(i));
                 String url = x.get(i);
                 memfs.storeInMemory(website);
-                if(memfs.getFileLocation() != null) {
-                Hasher hasherfunc = new Hasher(memfs.getFileLocation(), "SHA1");
-                if(!hasherfunc.checkHashes()) {
-                    Path completeDest = Paths.get(conf.getFileDestination() + url.substring(conf.getExtensionCutoff(), url.length()));
-                    if (!Files.exists(completeDest.getParent())) {
-                        Files.createDirectory(completeDest.getParent());
+                if (memfs.getFileLocation() != null) {
+                    Hasher hasherFunc = new Hasher(memfs.getFileLocation(), "SHA1");
+                    if (!hasherFunc.checkHashes()) {
+                        Path completeDest = Paths.get(conf.getFileDestination() + url.substring(conf.getExtensionCutoff(), url.length()));
+                        if (!Files.exists(completeDest.getParent())) {
+                            Files.createDirectory(completeDest.getParent());
+                        }
+                        Files.copy(memfs.getFileLocation(), completeDest, StandardCopyOption.REPLACE_EXISTING);
+                        hasherFunc.saveHash();
+                        Files.deleteIfExists(Paths.get("./temp/tempfile" + Thread.currentThread().getId()));
                     }
-                    Files.copy(memfs.getFileLocation(), completeDest, StandardCopyOption.REPLACE_EXISTING);
-                    hasherfunc.saveHash();
-                    Files.deleteIfExists(Paths.get("./temp/tempfile" + Thread.currentThread().getId()));
-                }
                 }
                 memfs.flushFS();
                 if (i == x.size() - 1) {
                     System.out.printf("[SUCCESS] 100%% DLing Files are located in %s", conf.getFileDestination());
                 }
             }
+        } catch (ClosedByInterruptException e) {
+            System.out.println("[ERROR] Downloading interrupted");
         } catch (HttpStatusException e) {
-            System.out.println("[ERROR] Unrecoverable error");
+            System.out.println("[ERROR] HTTP status error");
             e.printStackTrace();
         } catch (Exception e) {
             System.out.println("[ERROR] Unidentified error");
@@ -135,6 +162,10 @@ public abstract class ImgBoard extends Thread {
     abstract public void run();
 
     abstract String webmCheck();
+
+    public String getBoard() {
+        return board;
+    }
 
     abstract String locate4ch();
 

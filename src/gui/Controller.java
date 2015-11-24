@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import threads.ThreadManager;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,6 +28,10 @@ public class Controller extends OutputStream implements Initializable {
     public ComboBox<String> topicBox = new ComboBox<>();
     @FXML
     public TextField refreshInt;
+    @FXML
+    public Button streamButton;
+    @FXML
+    public Button killButton;
 
 
     public void startThread(ActionEvent event) {
@@ -37,19 +42,13 @@ public class Controller extends OutputStream implements Initializable {
         }
         try {
             if (topicBox.getValue().equals("/mu/ - kpg")) {
-                Topic kek = new Topic("kpg");
-                if (enableWEBM.isSelected()) {
-                    kek.includeWEBM();
-                }
-                kek.start();
+                ThreadManager.threadFactory("kpg");
             } else if (topicBox.getValue().equals("/p/ - Recent Photo")) {
-                Topic kuk = new Topic("p");
-                kuk.start();
+                System.out.println("[INFO] na man");
             } else if (topicBox.getValue().equals("/2ch/ - Webm Thread")) {
-            Topic kuk = new Topic("2webm");
-                kuk.onlyWEBM();
-                enableWEBM.fire();
-            kuk.start();
+                ThreadManager.threadFactory("2webm");
+            } else if (topicBox.getValue().equals("/2ch/ - Webm kpg")) {
+                ThreadManager.threadFactory("rukpg");
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -57,11 +56,43 @@ public class Controller extends OutputStream implements Initializable {
         }
     }
 
+    public void streamTo(ActionEvent event) {
+        ThreadManager.setStartStream(true);
+        try {
+            if (topicBox.getValue().equals("/2ch/ - Webm Thread")) {
+                ThreadManager.threadFactory("2webm");
+            } else if (topicBox.getValue().equals("/2ch/ - Webm kpg")) {
+                ThreadManager.threadFactory("rukpg");
+            } else {
+                System.out.println("[ERROR] Streaming isnt supported on this topic");
+                ThreadManager.setStartStream(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void killAll(ActionEvent event) {
+        try {
+            ThreadManager.killAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setWEBM(ActionEvent event) {
+        if(ThreadManager.isStartWithWebm()) {
+            ThreadManager.setStartWithWebm(false);
+        } else {
+            ThreadManager.setStartWithWebm(true);
+        }
+    }
+
 
     //this is from stackoverflow, i have no idea how it works
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        topicBox.getItems().addAll("/mu/ - kpg", "/p/ - Recent Photo", "/2ch/ - Webm Thread");
+        topicBox.getItems().addAll("/mu/ - kpg", "/p/ - Recent Photo", "/2ch/ - Webm Thread", "/2ch/ - Webm kpg");
         OutputStream out = new OutputStream() {
             @Override
             public void write(int b) throws IOException {
