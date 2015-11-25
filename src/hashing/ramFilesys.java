@@ -9,17 +9,23 @@ import java.net.URL;
 import java.nio.file.*;
 
 /**
- * Created by ayy on 11/19/15.
+ * Klass tekitab virtuaalse failisüsteemi mällu, mida kasutatakse
+ * räsi genereerimiseks ja kontrollimiseks enne kõvakettale salvestamist
+ *
+ * @version 1.0 25 Nov 2015
+ * @author Siim Saar
+ * @since 1.8
  */
 public class ramFilesys {
 
-    Path savePath;
     Path tempPath;
     FileSystem fs;
     static boolean maxExceeded;
 
-    public ramFilesys(Path savePath) {
-        this.savePath = savePath;
+    /**
+     * Tekitab mällu ajutise failisüsteemi
+     */
+    public ramFilesys() {
         try {
             fs = MemoryFileSystemBuilder.newLinux().build("tempfs" + Thread.currentThread().getId());
         } catch (Exception e) {
@@ -28,6 +34,10 @@ public class ramFilesys {
         }
     }
 
+    /**
+     * Salvestab faili mällu ja vea korral loob ajutise faili kõvakettale
+     * @param dlUrl faili asukoht
+     */
     public void storeInMemory(URL dlUrl){
         try {
             tempPath = fs.getPath("tempfile");
@@ -65,6 +75,10 @@ public class ramFilesys {
         }
     }
 
+    /**
+     * Väljastab faili asukoha mälus
+     * @return Faili asukoht mälus
+     */
     public Path getFileLocation() {
         return tempPath;
     }
@@ -73,6 +87,9 @@ public class ramFilesys {
         return maxExceeded;
     }
 
+    /**
+     * Puhastab mälu failidest ja sulgeb failisüsteemi
+     */
     public void flushFS() {
         try {
             fs.close();

@@ -15,7 +15,13 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-
+/**
+ * Antud klass annab GUI elementidele funktsionaalsuse
+ *
+ * @version 1.0 25 Nov 2015
+ * @author Siim Saar
+ * @since 1.8
+ */
 public class Controller extends OutputStream implements Initializable {
 
     @FXML
@@ -33,7 +39,11 @@ public class Controller extends OutputStream implements Initializable {
     @FXML
     public Button killButton;
 
-
+    /**
+     * Meetod alustab CheckBoxis valitud teemat protsessina ja loeb ka intervalli
+     * mille jooksul alustatakse uuesti failide allalaadimist
+     * @param event Mouseclick
+     */
     public void startThread(ActionEvent event) {
         if(refreshInt.getText().isEmpty()) {
             SettingsHandler.setUpdateInt(10000);
@@ -56,7 +66,13 @@ public class Controller extends OutputStream implements Initializable {
         }
     }
 
+    /**
+     * Meetod alustab Checkboxis valitud teemat protsessina streamimis režiimis
+     * Funktsionaalsus antakse Stream nupule
+     * @param event Mouseclick
+     */
     public void streamTo(ActionEvent event) {
+        ThreadManager.setStartWithWebm(false);
         ThreadManager.setStartStream(true);
         try {
             if (topicBox.getValue().equals("/2ch/ - Webm Thread")) {
@@ -67,11 +83,16 @@ public class Controller extends OutputStream implements Initializable {
                 System.out.println("[ERROR] Streaming isnt supported on this topic");
                 ThreadManager.setStartStream(false);
             }
+            ThreadManager.setStartStream(false);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Stop nupu funktsionaalsus mis alustab protsesside sulgemist
+     * @param event Mouseclcik
+     */
     public void killAll(ActionEvent event) {
         try {
             ThreadManager.killAll();
@@ -80,12 +101,24 @@ public class Controller extends OutputStream implements Initializable {
         }
     }
 
+    /**
+     * Seab loodava protsessi allalaadima ka webm laiendusega faile
+     * @param event Mouseclick
+     */
     public void setWEBM(ActionEvent event) {
         if(ThreadManager.isStartWithWebm()) {
             ThreadManager.setStartWithWebm(false);
         } else {
             ThreadManager.setStartWithWebm(true);
         }
+    }
+
+    /**
+     * Saadab teate GUIsse
+     * @param message
+     */
+    public void appendGui(String message) {
+        stdout.appendText(message);
     }
 
 

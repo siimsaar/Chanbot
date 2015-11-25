@@ -1,25 +1,33 @@
 package hashing;
 
-import core.SettingsHandler;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
+/**
+ * Klass teostab räside genereerimist failidele
+ *
+ * @version 1.0 25 Nov 2015
+ * @author Siim Saar
+ * @since 1.7
+ */
 public class Hasher {
-
-    SettingsHandler settings = new SettingsHandler();
 
     final String newLine = System.getProperty("line.separator");
 
     Path filePath;
     String hashType;
 
+    /**
+     * Konstruktor võtab sisse faili asukoha ja soovitava räsitüübi
+     * @param filePath Fail millele genereeritakse räsi
+     * @param hashType Genereeritava räsi tüüp
+     */
     public Hasher(Path filePath, String hashType) {
         this.filePath = filePath;
         this.hashType = hashType;
@@ -32,6 +40,10 @@ public class Hasher {
         }
     }
 
+    /**
+     * Genereerib failile MD5 tüüpi räsi
+     * @return MD5 räsi
+     */
     private String generateMD5() {
         String genHash = null;
         try {
@@ -42,6 +54,10 @@ public class Hasher {
         return genHash;
     }
 
+    /**
+     * Genereerib failile SHA1 tüüpi räsi
+     * @return SHA1 räsi
+     */
     private String generateSHA1() {
         String genHash = null;
         try {
@@ -52,6 +68,10 @@ public class Hasher {
         return genHash;
     }
 
+    /**
+     * Tagastab soovitud tüüpi räsi
+     * @return genereeritud räsi
+     */
     private String getHash() {
         String hash;
         switch (hashType) {
@@ -69,6 +89,9 @@ public class Hasher {
         return hash;
     }
 
+    /**
+     * Salvestab räsi faili
+     */
     public void saveHash() {
         try {
             String data = "hashes.txt";
@@ -79,6 +102,10 @@ public class Hasher {
         }
     }
 
+    /**
+     * Kontrollib kas sama räsiga fail juba on allalaaditud
+     * @return Kas räsi eksisteerib või mitte
+     */
     public boolean checkHashes() {
         String currentHash;
         String comparedHash = getHash();
