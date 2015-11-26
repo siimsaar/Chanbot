@@ -11,6 +11,7 @@ public class SettingsHandler {
     public String fileDestination = Paths.get(rawFileDestination).toAbsolutePath().normalize().toString();
     public String apiDestination = "./api_";
     public String hashDestination = Paths.get(".").toAbsolutePath().normalize().toString() + "hashes.txt";
+    public String mpvPath = "/usr/bin/mpv";
 
     private String boardn;
     private String pattern; // REGEX
@@ -18,7 +19,8 @@ public class SettingsHandler {
     private String prefix = "http:";
     private String notPattern = ":contains(null)";
     private String imgBoard;
-    private String apiUrl;
+    private String apiUrl = "http://a.4cdn.org/" + boardn + "/catalog.json";
+    private String hashType = "SHA1";
     private int maxPages = 5;
     private boolean jsonApi = false;
     private int topicLength = 50;
@@ -29,20 +31,32 @@ public class SettingsHandler {
      * Meetod määrab muutujad vastavalt otsitavale teemale
      * @param boardName Otsitav teema
      */
-    public void setValues(String boardName) {
+    void setValues(String boardName) {
         switch (boardName) {
             case "kpg":
                 jsonApi = true;
                 imgBoard = "4ch";
-                pattern = "{sub: ((?i)KPOP GENERAL|kpop|kpopg|kpg)}";
+                pattern = "{sub: ((?i)kpop general|kpop|kpopg|kpg)}";
                 url = "http://boards.4chan.org/mu/thread/";
                 extensionCutoff = 21;
                 boardn = "mu";
                 apiUrl = "http://a.4cdn.org/" + boardn + "/catalog.json";
                 break;
             case "p":
-                pattern = "{sub: RECENT PHOTO THREAD}";
-                url = "http://boards.4chan.org/p/";
+                jsonApi = true;
+                imgBoard = "4ch";
+                pattern = "{sub: ((?i)recent photo thread)}";
+                url = "http://boards.4chan.org/p/thread/";
+                boardn = "p";
+                apiUrl = "http://a.4cdn.org/" + boardn + "/catalog.json";
+                break;
+            case "ylyl":
+                jsonApi = true;
+                imgBoard = "4ch";
+                pattern = "{sub: ((?i)ylyl)}";
+                url = "http://boards.4chan.org/wsg/thread/";
+                boardn = "wsg";
+                apiUrl = "http://a.4cdn.org/" + boardn + "/catalog.json";
                 break;
             case "wg":
                 pattern = "{sub: (black wallpapers)}";
@@ -152,6 +166,14 @@ public class SettingsHandler {
      */
     public String getFileDestination() {
         return fileDestination;
+    }
+
+    /**
+     * Väljastab konfigureeritud räsitüübi
+     * @return räsitüüp
+     */
+    public String getHashType() {
+        return hashType;
     }
 
     /**

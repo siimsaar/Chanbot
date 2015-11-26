@@ -16,7 +16,7 @@ import java.nio.file.*;
  * @author Siim Saar
  * @since 1.8
  */
-public class ramFilesys {
+public class RamFS {
 
     Path tempPath;
     FileSystem fs;
@@ -25,7 +25,7 @@ public class ramFilesys {
     /**
      * Tekitab mällu ajutise failisüsteemi
      */
-    public ramFilesys() {
+    public RamFS() {
         try {
             fs = MemoryFileSystemBuilder.newLinux().build("tempfs" + Thread.currentThread().getId());
         } catch (Exception e) {

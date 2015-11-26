@@ -92,7 +92,7 @@ public class Hasher {
     /**
      * Salvestab räsi faili
      */
-    public void saveHash() {
+    synchronized public void saveHash() {
         try {
             String data = "hashes.txt";
             File file = new File(data);

@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.*?>
 <?import javafx.scene.text.*?>
-<?import javafx.scene.shape.*?>
 <?import javafx.scene.control.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.collections.FXCollections ?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
    <children>
-      <Button fx:id="startButton" defaultButton="true" layoutX="486.0" layoutY="113.0" mnemonicParsing="false" onAction="#startThread" prefHeight="30.0" prefWidth="98.0" text="Download">
+      <Button fx:id="startButton" defaultButton="true" layoutX="486.0" layoutY="113.0" mnemonicParsing="false" onAction="#startThread" prefHeight="30.0" prefWidth="98.0" text="Download" textAlignment="CENTER">
          <font>
             <Font size="14.0" />
          </font>
       </Button>
-      <Text layoutX="28.0" layoutY="91.0" strokeType="OUTSIDE" strokeWidth="0.0" text="bot_thing" wrappingWidth="262.99999737739563">
+      <Text layoutX="66.0" layoutY="98.0" strokeType="OUTSIDE" strokeWidth="0.0" text="bot" wrappingWidth="127.99999594688416">
          <font>
             <Font name="Ubuntu" size="57.0" />
          </font>
@@ -28,14 +24,13 @@
          <font>
             <Font size="10.0" />
          </font></TextField>
-      <Text layoutX="160.0" layoutY="109.0" strokeType="OUTSIDE" strokeWidth="0.0" text="you're lucky if it works!" wrappingWidth="168.126953125" />
-      <Button fx:id="streamButton" layoutX="401.0" layoutY="113.0" mnemonicParsing="false" onAction="#streamTo" prefHeight="30.0" prefWidth="80.0" text="Stream" textFill="#027252">
+      <Button fx:id="streamButton" layoutX="401.0" layoutY="113.0" mnemonicParsing="false" onAction="#streamTo" prefHeight="30.0" prefWidth="80.0" text="Stream" textFill="#000000eb">
          <font>
             <Font size="14.0" />
          </font>
       </Button>
       <Text layoutX="401.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Update period:" />
-      <Button fx:id="killButton" layoutX="335.0" layoutY="113.0" mnemonicParsing="false" onAction="#killAll" prefHeight="30.0" prefWidth="61.0" text="Stop" textFill="#d30000">
+      <Button fx:id="killButton" layoutX="335.0" layoutY="113.0" mnemonicParsing="false" onAction="#killAll" prefHeight="30.0" prefWidth="61.0" text="Stop">
          <font>
             <Font size="14.0" />
          </font>

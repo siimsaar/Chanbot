@@ -1,6 +1,6 @@
 package core;
 
-import hashing.ramFilesys;
+import hashing.RamFS;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.io.FileUtils;
@@ -32,7 +32,7 @@ import java.util.ArrayList;
 public abstract class ImgBoard extends Thread {
 
     String board;
-    ramFilesys memfs;
+    RamFS memfs;
     int precentage;
     boolean streaming = false;
 
@@ -41,7 +41,7 @@ public abstract class ImgBoard extends Thread {
         conf.setValues(board);
     }
 
-    protected SettingsHandler conf = new SettingsHandler();
+    SettingsHandler conf = new SettingsHandler();
 
     /**
      * Kontroll, kas JSONi link on konfiguratsioonis üldse olemas
@@ -67,7 +67,6 @@ public abstract class ImgBoard extends Thread {
             System.out.println("[ERROR] Site is down or you're not connected");
         } catch (Exception e) {
             System.out.println("[ERROR] Unidentified error");
-            System.out.println(locBoard());
             e.printStackTrace();
         }
     }
@@ -88,9 +87,9 @@ public abstract class ImgBoard extends Thread {
             }
                 Elements links = doc.select(webmCheck());
             for (Element x : links) {
-                elemnlist.add(conf.getPrefix() + x.attr("href"));
+                elemnlist.add(conf.getPrefix() + x.attr("href")); // leida HTMList <a href=> lingid
             }
-        } catch (NullPointerException | HttpStatusException | IllegalArgumentException ex) {
+        } catch (NullPointerException | HttpStatusException | IllegalArgumentException ex) { // Leidja suutmatuse korral alustada protsessi uuesti
             try {
                 System.out.println("[ERROR] Thread doesn't exist, trying again");
                 Thread.sleep(5000);
@@ -103,10 +102,9 @@ public abstract class ImgBoard extends Thread {
                     dlPictures(getLinks());
                 }
             } catch (InterruptedException i) {
-                System.out.println("[ERROR] Unrecoverable error");
+                System.out.println("[ERROR] Link retrieval has been interrupted");
             }
         } catch (Exception e) {
-            System.out.println("[ERROR] Unidentified error");
             e.printStackTrace();
         }
         return elemnlist;
@@ -122,11 +120,15 @@ public abstract class ImgBoard extends Thread {
             for(int i = linkList.size() - 1; i > 0; i--) {
                 links += linkList.get(i) + " ";
             }
+            if(!Files.exists(Paths.get(conf.mpvPath))) {
+                System.out.println("[ERROR] Cant find mpv");
+                return;
+            }
             System.out.println("[INFO] Streaming " + linkList.size() + " webms");
             String processName = "mpv " + links + " "; // koostab käsu stringina
-            CommandLine cmdProcess = CommandLine.parse(processName);
-            DefaultExecutor executor = new DefaultExecutor();
-            executor.execute(cmdProcess);
+            CommandLine cmdProcess = CommandLine.parse(processName); // Protsessi string cmd-st käivitamiseks
+            DefaultExecutor executor = new DefaultExecutor(); // Apache Exec libist käivitaja
+            executor.execute(cmdProcess); // käivitada cmd-st protsess
             //Runtime.getRuntime().exec("bash mpv " + links);
         } catch (Exception e) {
             e.printStackTrace();
@@ -147,20 +149,20 @@ public abstract class ImgBoard extends Thread {
                 }
                 precentage = (i * 100 / linkList.size());
                 System.out.printf("[INFO] %d %% %s DLing: %s%n", precentage, Thread.currentThread().getName(), linkList.get(i));
-                memfs = new ramFilesys();
+                memfs = new RamFS();
                 URL website = new URL(linkList.get(i));
                 String url = linkList.get(i);
                 memfs.storeInMemory(website);
-                if (memfs.getFileLocation() != null) {
-                    Hasher hasherFunc = new Hasher(memfs.getFileLocation(), "SHA1");
+                if (memfs.getFileLocation() != null) { // Kui on olemas fail siis alustab räsi genereerimist
+                    Hasher hasherFunc = new Hasher(memfs.getFileLocation(), conf.getHashType()); // anname räsigeneraatorile faili asukoha mälus ja räsitüübi
                     if (!hasherFunc.checkHashes()) {
                         Path completeDest = Paths.get(conf.getFileDestination() + url.substring(conf.getExtensionCutoff(), url.length()));
-                        if (!Files.exists(completeDest.getParent())) {
-                            Files.createDirectory(completeDest.getParent());
+                        if (!Files.exists(completeDest.getParent())) { // kui faili ei ekisteeri genereeri fail
+                            Files.createDirectory(completeDest.getParent()); // kui kausta ei eksisteeri siis uus kaust
                         }
-                        Files.copy(memfs.getFileLocation(), completeDest, StandardCopyOption.REPLACE_EXISTING);
+                        Files.copy(memfs.getFileLocation(), completeDest, StandardCopyOption.REPLACE_EXISTING); // kopeerida mälust fail kettale
                         hasherFunc.saveHash();
-                        Files.deleteIfExists(Paths.get("./temp/tempfile" + Thread.currentThread().getId()));
+                        Files.deleteIfExists(Paths.get("./temp/tempfile" + Thread.currentThread().getId())); // mällu salvestamise vea korral kustutada temp fail
                     }
                 }
                 memfs.flushFS();
@@ -174,7 +176,6 @@ public abstract class ImgBoard extends Thread {
             System.out.println("[ERROR] HTTP status error");
             e.printStackTrace();
         } catch (Exception e) {
-            System.out.println("[ERROR] Unidentified error");
             e.printStackTrace();
         } finally {
             memfs.flushFS();

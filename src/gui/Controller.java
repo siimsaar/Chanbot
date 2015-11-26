@@ -1,6 +1,5 @@
 package gui;
 
-import core.Topic;
 import core.SettingsHandler;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -29,7 +28,7 @@ public class Controller extends OutputStream implements Initializable {
     @FXML
     public CheckBox enableWEBM;
     @FXML
-    public TextArea stdout;
+    public  TextArea stdout;
     @FXML
     public ComboBox<String> topicBox = new ComboBox<>();
     @FXML
@@ -42,10 +41,11 @@ public class Controller extends OutputStream implements Initializable {
     /**
      * Meetod alustab CheckBoxis valitud teemat protsessina ja loeb ka intervalli
      * mille jooksul alustatakse uuesti failide allalaadimist
+     *
      * @param event Mouseclick
      */
     public void startThread(ActionEvent event) {
-        if(refreshInt.getText().isEmpty()) {
+        if (refreshInt.getText().isEmpty()) {
             SettingsHandler.setUpdateInt(10000);
         } else {
             SettingsHandler.setUpdateInt(Integer.parseInt(refreshInt.getText()) * 1000);
@@ -54,9 +54,11 @@ public class Controller extends OutputStream implements Initializable {
             if (topicBox.getValue().equals("/mu/ - kpg")) {
                 ThreadManager.threadFactory("kpg");
             } else if (topicBox.getValue().equals("/p/ - Recent Photo")) {
-                System.out.println("[INFO] na man");
+                ThreadManager.threadFactory("p");
             } else if (topicBox.getValue().equals("/2ch/ - Webm Thread")) {
                 ThreadManager.threadFactory("2webm");
+            } else if (topicBox.getValue().equals("/wsg/ - ylyl")) {
+                ThreadManager.threadFactory("ylyl");
             } else if (topicBox.getValue().equals("/2ch/ - Webm kpg")) {
                 ThreadManager.threadFactory("rukpg");
             }
@@ -69,6 +71,7 @@ public class Controller extends OutputStream implements Initializable {
     /**
      * Meetod alustab Checkboxis valitud teemat protsessina streamimis režiimis
      * Funktsionaalsus antakse Stream nupule
+     *
      * @param event Mouseclick
      */
     public void streamTo(ActionEvent event) {
@@ -79,6 +82,8 @@ public class Controller extends OutputStream implements Initializable {
                 ThreadManager.threadFactory("2webm");
             } else if (topicBox.getValue().equals("/2ch/ - Webm kpg")) {
                 ThreadManager.threadFactory("rukpg");
+            } else if (topicBox.getValue().equals("/wsg/ - ylyl")) {
+                ThreadManager.threadFactory("ylyl");
             } else {
                 System.out.println("[ERROR] Streaming isnt supported on this topic");
                 ThreadManager.setStartStream(false);
@@ -91,6 +96,7 @@ public class Controller extends OutputStream implements Initializable {
 
     /**
      * Stop nupu funktsionaalsus mis alustab protsesside sulgemist
+     *
      * @param event Mouseclcik
      */
     public void killAll(ActionEvent event) {
@@ -103,10 +109,11 @@ public class Controller extends OutputStream implements Initializable {
 
     /**
      * Seab loodava protsessi allalaadima ka webm laiendusega faile
+     *
      * @param event Mouseclick
      */
     public void setWEBM(ActionEvent event) {
-        if(ThreadManager.isStartWithWebm()) {
+        if (ThreadManager.isStartWithWebm()) {
             ThreadManager.setStartWithWebm(false);
         } else {
             ThreadManager.setStartWithWebm(true);
@@ -114,18 +121,15 @@ public class Controller extends OutputStream implements Initializable {
     }
 
     /**
-     * Saadab teate GUIsse
-     * @param message
+     * Suunab kõik stdout teated TextArea osasse GUI-s
+     *
+     * @author Taras (Stackoverflow)
+     * @param location
+     * @param resources
      */
-    public void appendGui(String message) {
-        stdout.appendText(message);
-    }
-
-
-    //this is from stackoverflow, i have no idea how it works
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        topicBox.getItems().addAll("/mu/ - kpg", "/p/ - Recent Photo", "/2ch/ - Webm Thread", "/2ch/ - Webm kpg");
+        topicBox.getItems().addAll("/wsg/ - ylyl", "/p/ - Recent Photo",  "/mu/ - kpg", "/2ch/ - Webm Thread", "/2ch/ - Webm kpg");
         OutputStream out = new OutputStream() {
             @Override
             public void write(int b) throws IOException {
@@ -134,9 +138,13 @@ public class Controller extends OutputStream implements Initializable {
         };
         System.setOut(new PrintStream(out, true));
     }
-    //this is from stackoverflow, i have no idea how it works
-    public void appendText(String str) {
-        Platform.runLater(() -> stdout.appendText(str));
+
+    /**
+     * Kirjutab teksti TextArea-sse
+     * @param text String mida kirjutada
+     */
+    public void appendText(String text) {
+        Platform.runLater(() -> stdout.appendText(text));
     }
 
     @Override
