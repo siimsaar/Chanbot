@@ -51,16 +51,12 @@ public class Controller extends OutputStream implements Initializable {
             SettingsHandler.setUpdateInt(Integer.parseInt(refreshInt.getText()) * 1000);
         }
         try {
-            if (topicBox.getValue().equals("/mu/ - kpg")) {
-                ThreadManager.threadFactory("kpg");
-            } else if (topicBox.getValue().equals("/p/ - Recent Photo")) {
+            if (topicBox.getValue().equals("/p/ - Recent Photo")) {
                 ThreadManager.threadFactory("p");
             } else if (topicBox.getValue().equals("/2ch/ - Webm Thread")) {
                 ThreadManager.threadFactory("2webm");
             } else if (topicBox.getValue().equals("/wsg/ - ylyl")) {
                 ThreadManager.threadFactory("ylyl");
-            } else if (topicBox.getValue().equals("/2ch/ - Webm kpg")) {
-                ThreadManager.threadFactory("rukpg");
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -80,8 +76,6 @@ public class Controller extends OutputStream implements Initializable {
         try {
             if (topicBox.getValue().equals("/2ch/ - Webm Thread")) {
                 ThreadManager.threadFactory("2webm");
-            } else if (topicBox.getValue().equals("/2ch/ - Webm kpg")) {
-                ThreadManager.threadFactory("rukpg");
             } else if (topicBox.getValue().equals("/wsg/ - ylyl")) {
                 ThreadManager.threadFactory("ylyl");
             } else {
@@ -129,7 +123,7 @@ public class Controller extends OutputStream implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        topicBox.getItems().addAll("/wsg/ - ylyl", "/p/ - Recent Photo",  "/mu/ - kpg", "/2ch/ - Webm Thread", "/2ch/ - Webm kpg");
+        topicBox.getItems().addAll("/wsg/ - ylyl", "/p/ - Recent Photo", "/2ch/ - Webm Thread");
         OutputStream out = new OutputStream() {
             @Override
             public void write(int b) throws IOException {

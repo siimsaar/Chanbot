@@ -33,15 +33,6 @@ public class SettingsHandler {
      */
     void setValues(String boardName) {
         switch (boardName) {
-            case "kpg":
-                jsonApi = true;
-                imgBoard = "4ch";
-                pattern = "{sub: ((?i)kpop general|kpop|kpopg|kpg)}";
-                url = "http://boards.4chan.org/mu/thread/";
-                extensionCutoff = 21;
-                boardn = "mu";
-                apiUrl = "http://a.4cdn.org/" + boardn + "/catalog.json";
-                break;
             case "p":
                 jsonApi = true;
                 imgBoard = "4ch";
@@ -69,15 +60,6 @@ public class SettingsHandler {
                 boardn = "b";
                 prefix = "https://2ch.hk/";
                 extensionCutoff = 32;
-                maxPages = 6;
-                break;
-            case "rukpg":
-                imgBoard = "2ch";
-                pattern = "blockquote:matches((?i)Вечноживой)";
-                url = "https://2ch.hk/kpop/";
-                boardn = "kpop";
-                prefix = "https://2ch.hk/";
-                extensionCutoff = 28;
                 maxPages = 6;
                 break;
             default:
