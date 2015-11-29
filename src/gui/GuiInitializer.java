@@ -15,7 +15,7 @@ import javafx.stage.WindowEvent;
  * @author Siim Saar
  * @since 1.8
  */
-public class Gui extends Application {
+public class GuiInitializer extends Application {
     /**
      * Loob akna FXML failist ja kuvab seda ekraanil
      * @param stage
@@ -23,8 +23,8 @@ public class Gui extends Application {
      */
     @Override
     public void start(Stage stage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("gui.fxml"));
-        stage.setTitle("ChanBot");
+        Parent root = FXMLLoader.load(getClass().getResource("View.fxml"));
+        stage.setTitle("bot");
         stage.setScene(new Scene(root, 600, 400));
         stage.show();
         stage.setResizable(false);

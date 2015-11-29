@@ -57,9 +57,12 @@ public class Controller extends OutputStream implements Initializable {
                 ThreadManager.threadFactory("2webm");
             } else if (topicBox.getValue().equals("/wsg/ - ylyl")) {
                 ThreadManager.threadFactory("ylyl");
+            } else if (topicBox.getValue().equals("/g/ - Desktops")) {
+                ThreadManager.threadFactory("desktops");
+            } else if (topicBox.getValue().equals("/g/ - Battlestations")) {
+                ThreadManager.threadFactory("battlestations");
             }
         } catch (NullPointerException e) {
-            e.printStackTrace();
             System.out.println("[WARNING] Pick a topic!");
         }
     }
@@ -78,6 +81,8 @@ public class Controller extends OutputStream implements Initializable {
                 ThreadManager.threadFactory("2webm");
             } else if (topicBox.getValue().equals("/wsg/ - ylyl")) {
                 ThreadManager.threadFactory("ylyl");
+            } else if (topicBox.getValue().equals("test")) {
+                ThreadManager.threadFactory("rukpg");
             } else {
                 System.out.println("[ERROR] Streaming isnt supported on this topic");
                 ThreadManager.setStartStream(false);
@@ -123,7 +128,7 @@ public class Controller extends OutputStream implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        topicBox.getItems().addAll("/wsg/ - ylyl", "/p/ - Recent Photo", "/2ch/ - Webm Thread");
+        topicBox.getItems().addAll("/wsg/ - ylyl", "/p/ - Recent Photo", "/2ch/ - Webm Thread", "/g/ - Desktops", "/g/ - Battlestations", "test");
         OutputStream out = new OutputStream() {
             @Override
             public void write(int b) throws IOException {

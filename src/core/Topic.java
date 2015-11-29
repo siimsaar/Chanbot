@@ -65,10 +65,10 @@ public class Topic extends ImgBoard {
         tryCount = 0;
         while(tryCount < conf.getMaxPages()) {
             try {
-                Document doc = Jsoup.connect(conf.getUrl() + pageIterator()).maxBodySize(0).timeout(500000).get();
+                Document doc = Jsoup.connect(conf.getUrl() + pageIterator()).maxBodySize(0).timeout(5000000).get();
                 Element link = doc.select(conf.getPattern()).not(conf.getNotPattern()).first();
                 String threadID = link.toString().substring(0, conf.getTopicLength()).replaceAll("[^0-9]", "");
-                return (conf.getUrl() + "res/" + threadID + ".html");
+                return (conf.getUrl() + "/res/" + threadID + ".html");
             } catch (NullPointerException | IOException er) {
                 tryCount++;
             }

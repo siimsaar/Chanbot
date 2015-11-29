@@ -21,7 +21,7 @@ public class SettingsHandler {
     private String imgBoard;
     private String apiUrl = "http://a.4cdn.org/" + boardn + "/catalog.json";
     private String hashType = "SHA1";
-    private int maxPages = 5;
+    private int maxPages = 6;
     private boolean jsonApi = false;
     private int topicLength = 50;
     private int extensionCutoff = 21;
@@ -37,17 +37,13 @@ public class SettingsHandler {
                 jsonApi = true;
                 imgBoard = "4ch";
                 pattern = "{sub: ((?i)recent photo thread)}";
-                url = "http://boards.4chan.org/p/thread/";
                 boardn = "p";
-                apiUrl = "http://a.4cdn.org/" + boardn + "/catalog.json";
                 break;
             case "ylyl":
                 jsonApi = true;
                 imgBoard = "4ch";
                 pattern = "{sub: ((?i)ylyl)}";
-                url = "http://boards.4chan.org/wsg/thread/";
                 boardn = "wsg";
-                apiUrl = "http://a.4cdn.org/" + boardn + "/catalog.json";
                 break;
             case "wg":
                 pattern = "{sub: (black wallpapers)}";
@@ -56,18 +52,40 @@ public class SettingsHandler {
                 imgBoard = "2ch";
                 pattern = "blockquote:matches((?i)webm)";
                 notPattern = ":contains(Анимублядский WebM-тред)";
-                url = "https://2ch.hk/b/";
                 boardn = "b";
                 prefix = "https://2ch.hk/";
                 extensionCutoff = 32;
-                maxPages = 6;
+                break;
+            case "desktops":
+                imgBoard = "4ch";
+                pattern = "{sub: ((?i)Desktop Thread)}";
+                boardn = "g";
+                break;
+            case "battlestations":
+                imgBoard = "4ch";
+                pattern = "{sub: ((?i)/BST/ - Battlestation| /bst/| Battlestations| bst)}";
+                boardn = "g";
+                break;
+            case "rukpg":
+                imgBoard = "2ch";
+                pattern = "blockquote:matches((?i)Вечноживой)";
+                boardn = "kpop";
+                extensionCutoff = 28;
                 break;
             default:
                 System.out.println("[ERROR] Invalid board");
-                Thread.currentThread().interrupt();
+                System.exit(-1);
         }
         fileDestination = fileDestination + "/" + boardName + "/";
         apiDestination = apiDestination + getBoard();
+        if(imgBoard.equals("4ch")) {
+            url = "http://boards.4chan.org/" + boardn + "/thread/";
+            apiUrl = "http://a.4cdn.org/" + boardn + "/catalog.json";
+            jsonApi = true;
+        } else {
+            url = "https://2ch.hk/" + boardn;
+            prefix = "https://2ch.hk/";
+        }
     }
 
     /**

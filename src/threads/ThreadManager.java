@@ -1,11 +1,14 @@
 package threads;
 
+import core.SettingsHandler;
 import core.Topic;
-import gui.Controller;
-import gui.Gui;
+import gui.GuiInitializer;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Klassi ülesanne on alustada ja lõpetada protsesside tööd
@@ -23,8 +26,12 @@ public class ThreadManager {
     public static List<Topic> runningTopics= new ArrayList<>();
 
     public static void main(String[] args) {
-        Gui.initGui(args);
-    }
+        if (ArrayUtils.contains(args, "--nogui")) {
+            cliStart();
+        } else {
+            GuiInitializer.initGui(args);
+                }
+            }
 
     /**
      * Loob protsessi vajalike paremeetridega
@@ -78,6 +85,31 @@ public class ThreadManager {
             System.err.println("Killing threads");
             }
         }
+
+    /**
+     * Alustab programmi ilma GUI-ta
+     */
+    public static void cliStart() {
+        String desiredBoard = null;
+        int updateInt = 0;
+        Scanner stdin = new Scanner(System.in);
+        try {
+            do {
+                System.out.println("Enter desired board: ");
+                desiredBoard = stdin.next();
+            } while (desiredBoard.isEmpty());
+            do {
+                System.out.println("Update interval in seconds: ");
+                updateInt = stdin.nextInt() * 100;
+            } while (updateInt <= 0);
+            SettingsHandler.setUpdateInt(updateInt * 100);
+            threadFactory(desiredBoard);
+        } catch (InputMismatchException e) {
+            cliStart();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Kontrollib ja tagastab OSi millel programm jookseb

@@ -11,6 +11,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.io.File;
 import hashing.Hasher;
+import threads.ThreadManager;
+
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.channels.ClosedByInterruptException;
@@ -81,9 +83,9 @@ public abstract class ImgBoard extends Thread {
         Document doc = null;
         try {
             if(conf.getImgBoard().equals("4ch")) {
-                doc = Jsoup.connect(conf.getUrl() + locate4ch()).get();
+                doc = Jsoup.connect(conf.getUrl() + locate4ch()).maxBodySize(0).get();
             } else if (conf.getImgBoard().equals("2ch")) {
-                doc = Jsoup.connect(locate2ch()).get();
+                doc = Jsoup.connect(locate2ch()).maxBodySize(0).get();
             }
                 Elements links = doc.select(webmCheck());
             for (Element x : links) {
@@ -92,6 +94,7 @@ public abstract class ImgBoard extends Thread {
         } catch (NullPointerException | HttpStatusException | IllegalArgumentException ex) { // Leidja suutmatuse korral alustada protsessi uuesti
             try {
                 System.out.println("[ERROR] Thread doesn't exist, trying again");
+                ex.printStackTrace();
                 Thread.sleep(5000);
                 if (conf.isJsonApi()) {
                     dlJSON();
@@ -122,6 +125,11 @@ public abstract class ImgBoard extends Thread {
             }
             if(!Files.exists(Paths.get(conf.mpvPath))) {
                 System.out.println("[ERROR] Cant find mpv");
+                if(ThreadManager.getOS().equals("unix")) {
+                    System.out.println("[INFO] Add mpv to your $PATH");
+                } else {
+                    System.out.println("[INFO] Add mpv dir to PATH in environment variable settings (advanced settings)");
+                }
                 return;
             }
             System.out.println("[INFO] Streaming " + linkList.size() + " webms");
