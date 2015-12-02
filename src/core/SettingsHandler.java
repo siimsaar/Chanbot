@@ -1,5 +1,6 @@
 package core;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
@@ -7,13 +8,14 @@ import java.nio.file.Paths;
  */
 public class SettingsHandler {
     // global
-    public static String rawFileDestination = ".";
-    public static String fileDestination = Paths.get(rawFileDestination).toAbsolutePath().normalize().toString();
-    public static String apiDestination = "./api_";
+    public static String[] items = {"/wsg/ - ylyl", "/p/ - Recent Photo", "/2ch/ - Webm Thread", "/wg/ - Desktops", "/g/ - Battlestations", "/wg/ - Homescreens", "/p/ - Film photography"};
+    public static String customDestination;
+    public static String fileDestination;
     public static String hashDestination = Paths.get(".").toAbsolutePath().normalize().toString() + "hashes.txt";
     public static int updateInt;
     // local
     private String boardn;
+    private int maxJsonPages = 10;
     private String pattern; // REGEX
     private String url; // URL koos boardi nimega
     private String prefix = "http:";
@@ -24,7 +26,6 @@ public class SettingsHandler {
     private int maxPages = 6;
     private boolean jsonApi = false;
     private int topicLength = 50;
-    private int extensionCutoff = 21;
 
     /**
      * Meetod määrab muutujad vastavalt otsitavale teemale
@@ -44,47 +45,44 @@ public class SettingsHandler {
                 pattern = "{sub: ((?i)ylyl)}";
                 boardn = "wsg";
                 break;
-            case "wg":
-                pattern = "{sub: (black wallpapers)}";
-                break;
             case "2webm":
                 imgBoard = "2ch";
                 pattern = "blockquote:matches((?i)webm)";
                 notPattern = ":contains(Анимублядский WebM-тред)";
                 boardn = "b";
-                extensionCutoff = 32;
                 break;
             case "desktop":
                 imgBoard = "4ch";
-                pattern = "{sub: ((?i)Desktop Thread|dpg)}";
-                boardn = "g";
+                pattern = "{sub: ((?i)(.*)(desktop)(.*))}";
+                boardn = "wg";
                 break;
             case "battlestations":
                 imgBoard = "4ch";
-                pattern = "{sub: ((?i)Gaming pc)}";
+                pattern = "{sub: ((?i)(.*)(battlestation)(.*))}";
                 boardn = "g";
                 break;
-            case "rukpg":
-                imgBoard = "2ch";
-                pattern = "blockquote:matches((?i)Вечноживой)";
-                boardn = "kpop";
-                extensionCutoff = 28;
-                break;
-            case "kpg":
+            case "homescreens":
                 imgBoard = "4ch";
-                pattern = "{sub: ((?i)KPOP GENERAL|kpop|kpopg|kpg|/kpg/ - KPOP GENERAL|korean pop general)}";
-                boardn = "mu";
+                pattern = "{sub: ((?i)(.*)(homescreen)(.*))}";
+                boardn = "wg";
                 break;
-
+            case "film":
+                imgBoard = "4ch";
+                pattern = "{sub: ((?i)(.*)(film)(.*))}";
+                boardn = "p";
+                break;
             default:
                 System.out.println("[ERROR] Invalid board ("+boardName+")");
                 System.exit(-1);
         }
-        fileDestination = fileDestination + "/" + boardName + "/";
-        apiDestination = apiDestination + getBoard();
+        if(customDestination == null || customDestination.isEmpty()) {
+            fileDestination = "./" + boardName + "/";
+        } else {
+            fileDestination = customDestination;
+        }
         if(imgBoard.equals("4ch")) {
             url = String.format("http://boards.4chan.org/%s/thread/", boardn);
-            apiUrl = String.format("http://a.4cdn.org/%s/catalog.json", boardn);
+            apiUrl = String.format("http://a.4cdn.org/%s/", boardn);
             jsonApi = true;
         } else {
             url = "https://2ch.hk/" + boardn;
@@ -141,11 +139,11 @@ public class SettingsHandler {
     }
 
     /**
-     *
-     * @return Tagastab asukoha kust lõigatakse lehe muu osa välja
+     * Kui mitu lehte on võimalik läbi minna
+     * @return lehtede arv
      */
-    public int getExtensionCutoff() {
-        return extensionCutoff;
+    public int getMaxJsonPages() {
+        return maxJsonPages;
     }
 
     /**
@@ -173,6 +171,15 @@ public class SettingsHandler {
     }
 
     /**
+     * Annab täpse koha kus failid asuvad
+     * @return absolute path
+     */
+    public String getAbsolutePath() {
+        return Paths.get(fileDestination).normalize().toAbsolutePath().toString();
+
+    }
+
+    /**
      * Väljastab konfigureeritud räsitüübi
      * @return räsitüüp
      */
@@ -180,13 +187,6 @@ public class SettingsHandler {
         return hashType;
     }
 
-    /**
-     *
-     * @return Tagastab API faili salvestamise asukoha
-     */
-    public String getApiDestination() {
-        return apiDestination;
-    }
 
     public String getHashDestination() {
         return hashDestination;

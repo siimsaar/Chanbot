@@ -4,6 +4,7 @@ import hashing.RamFS;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOExceptionWithCause;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -37,7 +38,7 @@ public abstract class ImgBoard extends Thread {
 
     String board;
     RamFS memfs;
-    int precentage;
+    int percentage;
     boolean streaming = false;
 
     public ImgBoard(String board) {
@@ -57,22 +58,6 @@ public abstract class ImgBoard extends Thread {
             System.out.println("[ERROR] Board isn't JSON enabled");
         }
         return boardLink;
-    }
-
-    /**
-     * Meetod võtab lingi ja tõmbab alla JSON faili
-     */
-    void dlJSON() {
-        try {
-            File dest = new File(conf.getApiDestination());
-            URL JSON_API = new URL(locBoard());
-            FileUtils.copyURLToFile(JSON_API, dest);
-        } catch (SocketTimeoutException e) {
-            System.out.println("[ERROR] Site is down or you're not connected");
-        } catch (Exception e) {
-            System.out.println("[ERROR] Unidentified error");
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -97,9 +82,6 @@ public abstract class ImgBoard extends Thread {
             try {
                 System.out.println("[ERROR] Thread doesn't exist, trying again");
                 Thread.sleep(5000);
-                if (conf.isJsonApi()) {
-                    dlJSON();
-                }
                 if(streaming) {
                     streamWebm(getLinks());
                 } else {
@@ -152,10 +134,10 @@ public abstract class ImgBoard extends Thread {
         try {
             for (int i = 0; i < linkList.size(); i++) {
                 if (i == 0) {
-                    System.out.println("[INFO] Downloading " + linkList.size() + " pics/vids from " + board);
+                    System.out.println("[INFO] Downloading " + linkList.size() + " pics/vids from " + conf.getBoard());
                 }
-                precentage = (i * 100 / linkList.size());
-                System.out.printf("[INFO] %d %% %s DLing: %s%n", precentage, Thread.currentThread().getName(), linkList.get(i));
+                percentage = (i * 100 / linkList.size());
+                System.out.printf("[INFO] %d %% %s DLing: %s%n", percentage, Thread.currentThread().getName(), linkList.get(i));
                 memfs = new RamFS();
                 URL website = new URL(linkList.get(i));
                 String url = linkList.get(i);
@@ -163,7 +145,7 @@ public abstract class ImgBoard extends Thread {
                 if (memfs.getFileLocation() != null) { // Kui on olemas fail siis alustab räsi genereerimist
                     Hasher hasherFunc = new Hasher(memfs.getFileLocation(), conf.getHashType()); // anname räsigeneraatorile faili asukoha mälus ja räsitüübi
                     if (!hasherFunc.checkHashes()) {
-                        Path completeDest = Paths.get(conf.getFileDestination() + url.substring(conf.getExtensionCutoff(), url.length()));
+                        Path completeDest = Paths.get(conf.getFileDestination() + FilenameUtils.getBaseName(url) + "." + FilenameUtils.getExtension(url));
                         if (!Files.exists(completeDest.getParent())) { // kui faili ei ekisteeri genereeri fail
                             Files.createDirectory(completeDest.getParent()); // kui kausta ei eksisteeri siis uus kaust
                         }
@@ -174,7 +156,7 @@ public abstract class ImgBoard extends Thread {
                 }
                 memfs.flushFS();
                 if (i == linkList.size() - 1) {
-                    System.out.printf("[SUCCESS] 100%% DLing Files are located in %s", conf.getFileDestination());
+                    System.out.printf("[SUCCESS] 100%% DLing Files are located in %s", conf.getAbsolutePath());
                 }
             }
         } catch (ClosedByInterruptException e) {

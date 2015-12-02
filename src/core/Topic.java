@@ -41,15 +41,14 @@ public class Topic extends ImgBoard {
      */
     @Override
     String locate4ch() {
-        String dataString = null;
+        String dataString;
         jsonCatalog = 1;
-        while (jsonCatalog <= 10) {
+        while (jsonCatalog <= conf.getMaxJsonPages()) {
             try {
                 UserAgent jsonReader = new UserAgent();
                 jsonReader.settings.maxBytes = -1;
                 jsonReader.settings.readTimeout = 600000;
-                String juurl = "http://a.4cdn.org/g/" + jsonIterator();
-                jsonReader.sendGET(juurl);
+                jsonReader.sendGET(conf.getApiUrl() + jsonIterator());
                 JNode thread = jsonReader.json.findEvery(conf.getPattern()).findEvery("no").get(0);
                 dataString = thread.toString();
                 if(!dataString.isEmpty()) {
@@ -135,9 +134,6 @@ public class Topic extends ImgBoard {
             while (!Thread.interrupted()) {
                 System.out.println("[INFO] Starting " + Thread.currentThread().getName().toLowerCase() + " updating every: " + conf.getUpdateInt() / 1000 + "s");
                 setThreadNum();
-                if (conf.isJsonApi()) {
-                    dlJSON();
-                }
                 dlPictures(getLinks());
                 Thread.sleep(conf.getUpdateInt());
             }
@@ -156,9 +152,6 @@ public class Topic extends ImgBoard {
         try {
             System.out.println("[INFO] Starting streaming from " + board);
             setThreadNum();
-            if (conf.isJsonApi()) {
-                dlJSON();
-            }
             streamWebm(getLinks());
             Thread.currentThread().interrupt();
         } catch (Exception e) {

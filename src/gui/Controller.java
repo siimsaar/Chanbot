@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 /**
  * Antud klass annab GUI elementidele funktsionaalsuse
@@ -57,10 +59,12 @@ public class Controller extends OutputStream implements Initializable {
                 ThreadManager.threadFactory("2webm");
             } else if (topicBox.getValue().equals("/wsg/ - ylyl")) {
                 ThreadManager.threadFactory("ylyl");
-            } else if (topicBox.getValue().equals("/g/ - Desktops")) {
+            } else if (topicBox.getValue().equals("/wg/ - Desktops")) {
                 ThreadManager.threadFactory("desktop");
-            } else if (topicBox.getValue().equals("nugu")) {
-                ThreadManager.threadFactory("kpg");
+            } else if (topicBox.getValue().equals("/wg/ - Homescreens")) {
+                ThreadManager.threadFactory("homescreens");
+            } else if (topicBox.getValue().equals("/p/ - Film photography")) {
+                ThreadManager.threadFactory("film");
             } else if (topicBox.getValue().equals("/g/ - Battlestations")) {
                 ThreadManager.threadFactory("battlestations");
             }
@@ -83,8 +87,6 @@ public class Controller extends OutputStream implements Initializable {
                 ThreadManager.threadFactory("2webm");
             } else if (topicBox.getValue().equals("/wsg/ - ylyl")) {
                 ThreadManager.threadFactory("ylyl");
-            } else if (topicBox.getValue().equals("test")) {
-                ThreadManager.threadFactory("rukpg");
             } else {
                 System.out.println("[ERROR] Streaming isnt supported on this topic");
                 ThreadManager.setStartStream(false);
@@ -130,7 +132,8 @@ public class Controller extends OutputStream implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        topicBox.getItems().addAll("/wsg/ - ylyl", "/p/ - Recent Photo", "/2ch/ - Webm Thread", "/g/ - Desktops", "/g/ - Battlestations", "test", "nugu");
+        Arrays.sort(SettingsHandler.items);
+        topicBox.getItems().addAll(SettingsHandler.items);
         OutputStream out = new OutputStream() {
             @Override
             public void write(int b) throws IOException {
