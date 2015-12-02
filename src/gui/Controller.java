@@ -58,7 +58,9 @@ public class Controller extends OutputStream implements Initializable {
             } else if (topicBox.getValue().equals("/wsg/ - ylyl")) {
                 ThreadManager.threadFactory("ylyl");
             } else if (topicBox.getValue().equals("/g/ - Desktops")) {
-                ThreadManager.threadFactory("desktops");
+                ThreadManager.threadFactory("desktop");
+            } else if (topicBox.getValue().equals("nugu")) {
+                ThreadManager.threadFactory("kpg");
             } else if (topicBox.getValue().equals("/g/ - Battlestations")) {
                 ThreadManager.threadFactory("battlestations");
             }
@@ -128,7 +130,7 @@ public class Controller extends OutputStream implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        topicBox.getItems().addAll("/wsg/ - ylyl", "/p/ - Recent Photo", "/2ch/ - Webm Thread", "/g/ - Desktops", "/g/ - Battlestations", "test");
+        topicBox.getItems().addAll("/wsg/ - ylyl", "/p/ - Recent Photo", "/2ch/ - Webm Thread", "/g/ - Desktops", "/g/ - Battlestations", "test", "nugu");
         OutputStream out = new OutputStream() {
             @Override
             public void write(int b) throws IOException {

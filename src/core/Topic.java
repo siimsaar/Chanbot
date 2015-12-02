@@ -1,11 +1,11 @@
 package core;
 
-import com.jaunt.JNode;
-import com.jaunt.NotFound;
-import com.jaunt.UserAgent;
+import com.jaunt.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.omg.PortableInterceptor.SUCCESSFUL;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -19,12 +19,14 @@ import java.io.IOException;
  */
 public class Topic extends ImgBoard {
 
-    int threadNum; // protsessi number
-    int tryCount = 0; // proovide kord HTML puhul
-    String dlWEBM = "default"; // otsitav meedium
+    private int threadNum; // protsessi number
+    private int tryCount = 0; // proovide kord HTML puhul
+    private int jsonCatalog; // jsoni proovide puhul
+    private String dlWEBM = "default"; // otsitav meedium
 
     /**
      * Konstruktor annab teema nime edasi superklassile
+     *
      * @param board Parameetriks on otsitav teema
      */
     public Topic(String board) {
@@ -34,41 +36,53 @@ public class Topic extends ImgBoard {
     /**
      * Meetod otsib ülesse soovitud teema lehelt võttes vajalikud seadmed SettingsHandler
      * klassist. Antud meetod teostab teema otsimist kasutades regexit JSON failis.
+     *
      * @return Otsitud teema
      */
     @Override
-    public String locate4ch() {
+    String locate4ch() {
         String dataString = null;
-        try {
-            UserAgent userAgent = new UserAgent();
-            userAgent.openJSON(new File(conf.apiDestination));
-            JNode thread = userAgent.json.findEvery(conf.getPattern()).findEvery("no").get(0);
-            dataString = thread.toString();
-            if (dataString.equals("[]\n")) {
-                System.out.println("[ERROR] Couldnt find the thread");
+        jsonCatalog = 1;
+        while (jsonCatalog <= 10) {
+            try {
+                UserAgent jsonReader = new UserAgent();
+                jsonReader.settings.maxBytes = -1;
+                jsonReader.settings.readTimeout = 600000;
+                String juurl = "http://a.4cdn.org/g/" + jsonIterator();
+                jsonReader.sendGET(juurl);
+                JNode thread = jsonReader.json.findEvery(conf.getPattern()).findEvery("no").get(0);
+                dataString = thread.toString();
+                if(!dataString.isEmpty()) {
+                    return dataString;
+                }
+                jsonCatalog++;
+            } catch (JauntException e) {
+                jsonCatalog++;
+            } catch (Exception e) {
+                System.err.println(e);
             }
-        } catch (NotFound e) {
-            Thread.interrupted();
-        } catch (Exception e) {
-            System.err.println(e);
         }
-        return dataString;
+        return null;
     }
 
     /**
      * Meetod otsib ülesse soovitud teema lehelt võttes vajalikud seadmed SettingsHandler
      * klassist. Antud meetod teostab otsimist HTML dokumendist regexi abil.
+     *
      * @return Otsitud teema
      */
     @Override
-    public String locate2ch() {
+    String locate2ch() {
         tryCount = 0;
-        while(tryCount < conf.getMaxPages()) {
+        while (tryCount < conf.getMaxPages()) {
             try {
-                Document doc = Jsoup.connect(conf.getUrl() + pageIterator()).maxBodySize(0).timeout(5000000).get();
+                Document doc = Jsoup.connect(conf.getUrl() + pageIterator()).maxBodySize(0).timeout(500000).get();
                 Element link = doc.select(conf.getPattern()).not(conf.getNotPattern()).first();
                 String threadID = link.toString().substring(0, conf.getTopicLength()).replaceAll("[^0-9]", "");
-                return (conf.getUrl() + "/res/" + threadID + ".html");
+                if(!threadID.isEmpty()) {
+                    return (conf.getUrl() + "/res/" + threadID + ".html");
+                }
+                tryCount++;
             } catch (NullPointerException | IOException er) {
                 tryCount++;
             }
@@ -89,6 +103,9 @@ public class Topic extends ImgBoard {
         }
     }
 
+    String jsonIterator() {
+            return jsonCatalog + ".json";
+    }
     /**
      * Meetod annab faili linke otsivale meetodile ette selle, mis tüüpi faile on soovitud
      * @return soovitud andmetüübid
@@ -148,6 +165,7 @@ public class Topic extends ImgBoard {
             e.printStackTrace();
             System.out.println("[ERROR] Streaming init failed");
         }
+        System.out.println("[SUCCESS] Stream finished");
     }
 
     /**

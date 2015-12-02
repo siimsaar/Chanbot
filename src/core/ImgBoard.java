@@ -4,6 +4,7 @@ import hashing.RamFS;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOExceptionWithCause;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,6 +14,7 @@ import java.io.File;
 import hashing.Hasher;
 import threads.ThreadManager;
 
+import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.channels.ClosedByInterruptException;
@@ -79,22 +81,21 @@ public abstract class ImgBoard extends Thread {
      * @return failidele viitavad lingid dünaamilises masiivis
      */
     ArrayList<String> getLinks() {
-        ArrayList<String> elemnlist = new ArrayList<>();
+        ArrayList<String> elemnList = new ArrayList<>();
         Document doc = null;
         try {
             if(conf.getImgBoard().equals("4ch")) {
-                doc = Jsoup.connect(conf.getUrl() + locate4ch()).maxBodySize(0).get();
+                doc = Jsoup.connect(conf.getUrl() + locate4ch()).maxBodySize(0).timeout(5000000).get();
             } else if (conf.getImgBoard().equals("2ch")) {
-                doc = Jsoup.connect(locate2ch()).maxBodySize(0).get();
+                doc = Jsoup.connect(locate2ch()).maxBodySize(0).timeout(5000000).get();
             }
                 Elements links = doc.select(webmCheck());
             for (Element x : links) {
-                elemnlist.add(conf.getPrefix() + x.attr("href")); // leida HTMList <a href=> lingid
+                elemnList.add(conf.getPrefix() + x.attr("href")); // leida HTMList <a href=> lingid
             }
         } catch (NullPointerException | HttpStatusException | IllegalArgumentException ex) { // Leidja suutmatuse korral alustada protsessi uuesti
             try {
                 System.out.println("[ERROR] Thread doesn't exist, trying again");
-                ex.printStackTrace();
                 Thread.sleep(5000);
                 if (conf.isJsonApi()) {
                     dlJSON();
@@ -106,11 +107,12 @@ public abstract class ImgBoard extends Thread {
                 }
             } catch (InterruptedException i) {
                 System.out.println("[ERROR] Link retrieval has been interrupted");
+                return null;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return elemnlist;
+        return elemnList;
     }
 
     /**
@@ -120,24 +122,21 @@ public abstract class ImgBoard extends Thread {
     void streamWebm(ArrayList<String> linkList) {
         String links = "";
         try {
-            for(int i = linkList.size() - 1; i > 0; i--) {
-                links += linkList.get(i) + " ";
-            }
-            if(!Files.exists(Paths.get(conf.mpvPath))) {
-                System.out.println("[ERROR] Cant find mpv");
-                if(ThreadManager.getOS().equals("unix")) {
-                    System.out.println("[INFO] Add mpv to your $PATH");
-                } else {
-                    System.out.println("[INFO] Add mpv dir to PATH in environment variable settings (advanced settings)");
+            if(!linkList.isEmpty()) {
+                for (int i = linkList.size() - 1; i > 0; i--) {
+                    links += linkList.get(i) + " ";
                 }
-                return;
+                System.out.println("[INFO] Streaming " + linkList.size() + " webms");
+                String processName = "mpv " + links + " "; // koostab käsu stringina
+                CommandLine cmdProcess = CommandLine.parse(processName); // Protsessi string cmd-st käivitamiseks
+                DefaultExecutor executor = new DefaultExecutor(); // Apache Exec libist käivitaja
+                try {
+                    executor.execute(cmdProcess); // käivitada cmd-st protsess
+                } catch (IOException e) {
+                    System.out.println("[ERROR] mpv not found in $PATH");
+                    e.printStackTrace();
+                }
             }
-            System.out.println("[INFO] Streaming " + linkList.size() + " webms");
-            String processName = "mpv " + links + " "; // koostab käsu stringina
-            CommandLine cmdProcess = CommandLine.parse(processName); // Protsessi string cmd-st käivitamiseks
-            DefaultExecutor executor = new DefaultExecutor(); // Apache Exec libist käivitaja
-            executor.execute(cmdProcess); // käivitada cmd-st protsess
-            //Runtime.getRuntime().exec("bash mpv " + links);
         } catch (Exception e) {
             e.printStackTrace();
         }

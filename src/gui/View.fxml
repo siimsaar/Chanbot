@@ -17,7 +17,7 @@
          </font>
       </Text>
       <TextArea fx:id="stdout" layoutX="14.0" layoutY="154.0" prefHeight="231.0" prefWidth="571.0" />
-      <Text layoutX="10.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="v0.09" wrappingWidth="35.126953125" />
+      <Text layoutX="10.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="v0.10" wrappingWidth="36.126953125" />
       <CheckBox fx:id="enableWEBM" layoutX="472.0" layoutY="59.0" mnemonicParsing="false" onAction="#setWEBM" text="Include .webm" />
       <ComboBox fx:id="topicBox" layoutX="435.0" layoutY="24.0" prefWidth="150.0" promptText="Pick your poison" />
       <TextField fx:id="refreshInt" layoutX="500.0" layoutY="84.0" prefHeight="18.0" prefWidth="80.0" promptText="Interval (sec)">

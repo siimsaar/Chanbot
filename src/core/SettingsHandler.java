@@ -6,26 +6,25 @@ import java.nio.file.Paths;
  * Klass määrab erinevad seadmed programmi kasutamiseks
  */
 public class SettingsHandler {
-
-    public String rawFileDestination = ".";
-    public String fileDestination = Paths.get(rawFileDestination).toAbsolutePath().normalize().toString();
-    public String apiDestination = "./api_";
-    public String hashDestination = Paths.get(".").toAbsolutePath().normalize().toString() + "hashes.txt";
-    public String mpvPath = "/usr/bin/mpv";
-
+    // global
+    public static String rawFileDestination = ".";
+    public static String fileDestination = Paths.get(rawFileDestination).toAbsolutePath().normalize().toString();
+    public static String apiDestination = "./api_";
+    public static String hashDestination = Paths.get(".").toAbsolutePath().normalize().toString() + "hashes.txt";
+    public static int updateInt;
+    // local
     private String boardn;
     private String pattern; // REGEX
     private String url; // URL koos boardi nimega
     private String prefix = "http:";
     private String notPattern = ":contains(null)";
     private String imgBoard;
-    private String apiUrl = "http://a.4cdn.org/" + boardn + "/catalog.json";
+    private String apiUrl;
     private String hashType = "SHA1";
     private int maxPages = 6;
     private boolean jsonApi = false;
     private int topicLength = 50;
     private int extensionCutoff = 21;
-    static private int updateInt;
 
     /**
      * Meetod määrab muutujad vastavalt otsitavale teemale
@@ -53,17 +52,16 @@ public class SettingsHandler {
                 pattern = "blockquote:matches((?i)webm)";
                 notPattern = ":contains(Анимублядский WebM-тред)";
                 boardn = "b";
-                prefix = "https://2ch.hk/";
                 extensionCutoff = 32;
                 break;
-            case "desktops":
+            case "desktop":
                 imgBoard = "4ch";
-                pattern = "{sub: ((?i)Desktop Thread)}";
+                pattern = "{sub: ((?i)Desktop Thread|dpg)}";
                 boardn = "g";
                 break;
             case "battlestations":
                 imgBoard = "4ch";
-                pattern = "{sub: ((?i)/BST/ - Battlestation| /bst/| Battlestations| bst)}";
+                pattern = "{sub: ((?i)Gaming pc)}";
                 boardn = "g";
                 break;
             case "rukpg":
@@ -72,15 +70,21 @@ public class SettingsHandler {
                 boardn = "kpop";
                 extensionCutoff = 28;
                 break;
+            case "kpg":
+                imgBoard = "4ch";
+                pattern = "{sub: ((?i)KPOP GENERAL|kpop|kpopg|kpg|/kpg/ - KPOP GENERAL|korean pop general)}";
+                boardn = "mu";
+                break;
+
             default:
-                System.out.println("[ERROR] Invalid board");
+                System.out.println("[ERROR] Invalid board ("+boardName+")");
                 System.exit(-1);
         }
         fileDestination = fileDestination + "/" + boardName + "/";
         apiDestination = apiDestination + getBoard();
         if(imgBoard.equals("4ch")) {
-            url = "http://boards.4chan.org/" + boardn + "/thread/";
-            apiUrl = "http://a.4cdn.org/" + boardn + "/catalog.json";
+            url = String.format("http://boards.4chan.org/%s/thread/", boardn);
+            apiUrl = String.format("http://a.4cdn.org/%s/catalog.json", boardn);
             jsonApi = true;
         } else {
             url = "https://2ch.hk/" + boardn;

@@ -27,7 +27,7 @@ public class ThreadManager {
 
     public static void main(String[] args) {
         if (ArrayUtils.contains(args, "--nogui")) {
-            cliStart();
+            cliStart(args);
         } else {
             GuiInitializer.initGui(args);
                 }
@@ -89,23 +89,35 @@ public class ThreadManager {
     /**
      * Alustab programmi ilma GUI-ta
      */
-    public static void cliStart() {
-        String desiredBoard = null;
-        int updateInt = 0;
+    public static void cliStart(String[] args) {
+        String desiredBoard;
+        int updateInt;
         Scanner stdin = new Scanner(System.in);
         try {
             do {
                 System.out.println("Enter desired board: ");
                 desiredBoard = stdin.next();
             } while (desiredBoard.isEmpty());
-            do {
-                System.out.println("Update interval in seconds: ");
-                updateInt = stdin.nextInt() * 100;
-            } while (updateInt <= 0);
-            SettingsHandler.setUpdateInt(updateInt * 100);
+            if(!(ArrayUtils.contains(args, "-S") || ArrayUtils.contains(args, "--stream"))) {
+                do {
+                    System.out.println("Update interval in seconds: ");
+                    updateInt = stdin.nextInt() * 100;
+                } while (updateInt <= 0);
+                SettingsHandler.setUpdateInt(updateInt * 10);
+            }
+            if(ArrayUtils.contains(args, "-W") || ArrayUtils.contains(args, "--webm")) {
+                setStartWithWebm(true);
+            }
+            if(ArrayUtils.contains(args, "-WO") || ArrayUtils.contains(args, "--webmonly")) {
+               setStartWebmOnly(true);
+            }
+            if(ArrayUtils.contains(args, "-S") || ArrayUtils.contains(args, "--stream")) {
+                setStartStream(true);
+            }
             threadFactory(desiredBoard);
         } catch (InputMismatchException e) {
-            cliStart();
+            System.out.printf("[ERROR] Invalid input%n");
+            cliStart(args);
         } catch (Exception e) {
             e.printStackTrace();
         }
