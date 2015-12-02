@@ -167,7 +167,13 @@ public abstract class ImgBoard extends Thread {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            memfs.flushFS();
+            try {
+                memfs.flushFS();
+            } catch (NullPointerException e) {
+                System.out.println("[ERROR] No desired filetypes to download, try including webm");
+                Thread.currentThread().interrupt();
+                ThreadManager.runningTopics.remove(this);
+            }
         }
     }
 

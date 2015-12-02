@@ -3,6 +3,7 @@ package threads;
 import core.SettingsHandler;
 import core.Topic;
 import gui.GuiInitializer;
+import hashing.RamFS;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class ThreadManager {
     public static List<Topic> runningTopics= new ArrayList<>();
 
     public static void main(String[] args) {
-        if (ArrayUtils.contains(args, "--nogui")) {
+        if (ArrayUtils.contains(args, "--nogui") || ArrayUtils.contains(args, "-N")) {
             cliStart(args);
         } else {
             GuiInitializer.initGui(args);
@@ -74,17 +75,18 @@ public class ThreadManager {
     /**
      * Tapab kõik jooksvad protsessid
      */
-    public static void killAll(){
+    public static void killAll() {
         try {
-            for(int i=0; i < runningTopics.size(); i++) {
-                runningTopics.get(i).interrupt();
-                runningTopics.remove(i);
-                killAll();
-        }
+            while (!runningTopics.isEmpty()) {
+                for (int i = 0; i < runningTopics.size(); i++) {
+                    runningTopics.get(i).interrupt();
+                    runningTopics.remove(i);
+                }
+            }
         } catch (Exception e) {
             System.err.println("Killing threads");
-            }
         }
+    }
 
     /**
      * Alustab programmi ilma GUI-ta

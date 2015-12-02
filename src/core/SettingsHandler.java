@@ -8,7 +8,7 @@ import java.nio.file.Paths;
  */
 public class SettingsHandler {
     // global
-    public static String[] items = {"/wsg/ - ylyl", "/p/ - Recent Photo", "/2ch/ - Webm Thread", "/wg/ - Desktops", "/g/ - Battlestations", "/wg/ - Homescreens", "/p/ - Film photography"};
+    public static String[] items = {"/wsg/ - ylyl", "/p/ - Recent Photo", "/wg/ - Desktops", "/g/ - Battlestations", "/wg/ - Homescreens", "/p/ - Film photography", "/wg/ - Space", "/wsg/ - Terrible music", "/fa/ - waywt"};
     public static String customDestination;
     public static String fileDestination;
     public static String hashDestination = Paths.get(".").toAbsolutePath().normalize().toString() + "hashes.txt";
@@ -34,13 +34,11 @@ public class SettingsHandler {
     void setValues(String boardName) {
         switch (boardName) {
             case "p":
-                jsonApi = true;
                 imgBoard = "4ch";
                 pattern = "{sub: ((?i)recent photo thread)}";
                 boardn = "p";
                 break;
             case "ylyl":
-                jsonApi = true;
                 imgBoard = "4ch";
                 pattern = "{sub: ((?i)ylyl)}";
                 boardn = "wsg";
@@ -64,6 +62,21 @@ public class SettingsHandler {
             case "homescreens":
                 imgBoard = "4ch";
                 pattern = "{sub: ((?i)(.*)(homescreen)(.*))}";
+                boardn = "wg";
+                break;
+            case "music":
+                imgBoard = "4ch";
+                pattern = "{sub: ((?i)(.*)(music)(.*))}";
+                boardn = "wsg";
+                break;
+            case "waywt":
+                imgBoard = "4ch";
+                pattern = "{sub: ((?i)(.*)(waywt)(.*))}";
+                boardn = "fa";
+                break;
+            case "space":
+                imgBoard = "4ch";
+                pattern = "{sub: ((?i)(.*)(space)(.*))}";
                 boardn = "wg";
                 break;
             case "film":

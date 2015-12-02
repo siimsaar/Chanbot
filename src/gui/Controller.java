@@ -67,6 +67,12 @@ public class Controller extends OutputStream implements Initializable {
                 ThreadManager.threadFactory("film");
             } else if (topicBox.getValue().equals("/g/ - Battlestations")) {
                 ThreadManager.threadFactory("battlestations");
+            } else if (topicBox.getValue().equals("/wsg/ - Terrible music")) {
+                ThreadManager.threadFactory("music");
+            } else if (topicBox.getValue().equals("/fa/ - waywt")) {
+                ThreadManager.threadFactory("waywt");
+            } else if (topicBox.getValue().equals("/wg/ - Space")) {
+                ThreadManager.threadFactory("space");
             }
         } catch (NullPointerException e) {
             System.out.println("[WARNING] Pick a topic!");
@@ -87,6 +93,8 @@ public class Controller extends OutputStream implements Initializable {
                 ThreadManager.threadFactory("2webm");
             } else if (topicBox.getValue().equals("/wsg/ - ylyl")) {
                 ThreadManager.threadFactory("ylyl");
+            } else if (topicBox.getValue().equals("/wsg/ - Terrible music")) {
+                ThreadManager.threadFactory("music");
             } else {
                 System.out.println("[ERROR] Streaming isnt supported on this topic");
                 ThreadManager.setStartStream(false);
