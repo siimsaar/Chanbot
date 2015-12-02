@@ -1,5 +1,5 @@
 # bot
-Thread scraper/streamer for various image boards. 
+Automatic thread scraper and streamer for various image boards. 
 
 ### OPTIONS
 ```
@@ -8,6 +8,8 @@ Thread scraper/streamer for various image boards.
 -W or --webm : Enables .webm downloading
 -WO or --webmonly : Only downloads .webm files
 ```
+### STREAMING
+Mpv binary file must exist in $PATH for streaming to work
 
 ### SUPPORTED IMAGE BOARDS
 As of now it supports halfchan and 2ch
