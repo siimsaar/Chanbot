@@ -1,5 +1,6 @@
 package core;
 
+import gui.Controller;
 import hashing.RamFS;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -40,6 +41,7 @@ public abstract class ImgBoard extends Thread {
     RamFS memfs;
     int percentage;
     boolean streaming = false;
+    boolean interrupted;
 
     public ImgBoard(String board) {
         this.board = board;
@@ -47,18 +49,6 @@ public abstract class ImgBoard extends Thread {
     }
 
     SettingsHandler conf = new SettingsHandler();
-
-    /**
-     * Kontroll, kas JSONi link on konfiguratsioonis üldse olemas
-     * @return link JSON failile
-     */
-    String locBoard() {
-        String boardLink = conf.getApiUrl();
-        if (boardLink == null) {
-            System.out.println("[ERROR] Board isn't JSON enabled");
-        }
-        return boardLink;
-    }
 
     /**
      * Meetod loob dünaamilise masiivi kuhu lisatakse antud lehelt soovitud failid
@@ -88,6 +78,7 @@ public abstract class ImgBoard extends Thread {
                     dlPictures(getLinks());
                 }
             } catch (InterruptedException i) {
+                interrupted = true;
                 System.out.println("[ERROR] Link retrieval has been interrupted");
                 return null;
             }
@@ -170,9 +161,11 @@ public abstract class ImgBoard extends Thread {
             try {
                 memfs.flushFS();
             } catch (NullPointerException e) {
-                System.out.println("[ERROR] No desired filetypes to download, try including webm");
-                Thread.currentThread().interrupt();
-                ThreadManager.runningTopics.remove(this);
+                if (!interrupted && !Controller.killThreads) {
+                    System.out.println("[ERROR] No desired filetypes to download, try including webm");
+                    Thread.currentThread().interrupt();
+                    ThreadManager.runningTopics.remove(this);
+                }
             }
         }
     }

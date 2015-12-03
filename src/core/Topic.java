@@ -5,6 +5,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.omg.PortableInterceptor.SUCCESSFUL;
+import threads.ThreadManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class Topic extends ImgBoard {
                 UserAgent jsonReader = new UserAgent();
                 jsonReader.settings.maxBytes = -1;
                 jsonReader.settings.readTimeout = 600000;
-                jsonReader.sendGET(conf.getApiUrl() + jsonIterator());
+                jsonReader.sendGET(conf.getApiUrl() + jsonCatalog + ".json");
                 JNode thread = jsonReader.json.findEvery(conf.getPattern()).findEvery("no").get(0);
                 dataString = thread.toString();
                 if(!dataString.isEmpty()) {
@@ -75,9 +76,9 @@ public class Topic extends ImgBoard {
         tryCount = 0;
         while (tryCount < conf.getMaxPages()) {
             try {
-                Document doc = Jsoup.connect(conf.getUrl() + pageIterator()).maxBodySize(0).timeout(500000).get();
-                Element link = doc.select(conf.getPattern()).not(conf.getNotPattern()).first();
-                String threadID = link.toString().substring(0, conf.getTopicLength()).replaceAll("[^0-9]", "");
+                Document htmlFile = Jsoup.connect(conf.getUrl() + page()).maxBodySize(0).timeout(500000).get();
+                Element htmlLinks = htmlFile.select(conf.getPattern()).not(conf.getNotPattern()).first();
+                String threadID = htmlLinks.toString().substring(0, conf.getTopicLength()).replaceAll("[^0-9]", "");
                 if(!threadID.isEmpty()) {
                     return (conf.getUrl() + "/res/" + threadID + ".html");
                 }
@@ -94,7 +95,7 @@ public class Topic extends ImgBoard {
      * antud meetod annab ette järgmise lehe otsijameetodile.
      * @return järgmine leht kust otsida teemat
      */
-    String pageIterator() {
+    String page() {
         if (tryCount == 0) {
             return "";
         } else {
@@ -102,9 +103,6 @@ public class Topic extends ImgBoard {
         }
     }
 
-    String jsonIterator() {
-            return jsonCatalog + ".json";
-    }
     /**
      * Meetod annab faili linke otsivale meetodile ette selle, mis tüüpi faile on soovitud
      * @return soovitud andmetüübid
@@ -150,7 +148,7 @@ public class Topic extends ImgBoard {
      */
     public void stream() {
         try {
-            System.out.println("[INFO] Starting streaming from " + board);
+            System.out.println("[INFO] Starting streaming from " + conf.getBoard());
             setThreadNum();
             streamWebm(getLinks());
             Thread.currentThread().interrupt();
@@ -159,6 +157,7 @@ public class Topic extends ImgBoard {
             System.out.println("[ERROR] Streaming init failed");
         }
         System.out.println("[SUCCESS] Stream finished");
+        ThreadManager.runningTopics.remove(this);
     }
 
     /**

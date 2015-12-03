@@ -43,12 +43,6 @@ public class SettingsHandler {
                 pattern = "{sub: ((?i)ylyl)}";
                 boardn = "wsg";
                 break;
-            case "2webm":
-                imgBoard = "2ch";
-                pattern = "blockquote:matches((?i)webm)";
-                notPattern = ":contains(Анимублядский WebM-тред)";
-                boardn = "b";
-                break;
             case "desktop":
                 imgBoard = "4ch";
                 pattern = "{sub: ((?i)(.*)(desktop)(.*))}";

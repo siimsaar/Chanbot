@@ -1,5 +1,6 @@
 package gui;
 
+import core.ImgBoard;
 import core.SettingsHandler;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -39,6 +40,8 @@ public class Controller extends OutputStream implements Initializable {
     public Button streamButton;
     @FXML
     public Button killButton;
+
+    public static boolean killThreads;
 
     /**
      * Meetod alustab CheckBoxis valitud teemat protsessina ja loeb ka intervalli
@@ -111,6 +114,7 @@ public class Controller extends OutputStream implements Initializable {
      * @param event Mouseclcik
      */
     public void killAll(ActionEvent event) {
+        killThreads = true;
         try {
             ThreadManager.killAll();
         } catch (Exception e) {
@@ -134,7 +138,7 @@ public class Controller extends OutputStream implements Initializable {
     /**
      * Suunab kõik stdout teated TextArea osasse GUI-s
      *
-     * @author Taras (Stackoverflow)
+     * @author Taras (Stackoverflow) http://stackoverflow.com/questions/26874701/redirect-console-output-to-javafx-textarea
      * @param location
      * @param resources
      */
