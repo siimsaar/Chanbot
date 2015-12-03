@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Libs">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/libs/commons-exec-1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/libs/commons-codec-1.10.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/libs/commons-io-2.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/libs/commons-lang3-3.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/libs/jaunt1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/libs/jsoup-1.8.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/libs/memoryfilesystem-0.7.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
