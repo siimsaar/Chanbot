@@ -52,7 +52,7 @@ public abstract class ImgBoard extends Thread {
         conf.setValues(board);
     }
 
-    SettingsHandler conf = new SettingsHandler();
+    SettingsHandler conf = new SettingsHandler(); // uus Settingute objekt vastavalt otsitavale teemale
 
     /**
      * Meetod loob dünaamilise masiivi kuhu lisatakse antud lehelt soovitud failid
@@ -64,11 +64,11 @@ public abstract class ImgBoard extends Thread {
         Document doc = null;
         try {
             if(conf.getImgBoard().equals("4ch")) {
-                doc = Jsoup.connect(conf.getUrl() + locate4ch()).maxBodySize(0).timeout(5000000).get();
+                doc = Jsoup.connect(conf.getUrl() + locate4ch()).maxBodySize(0).timeout(5000000).get(); // tõmba HTML fail linkide jaoks
             } else if (conf.getImgBoard().equals("2ch")) {
-                doc = Jsoup.connect(locate2ch()).maxBodySize(0).timeout(5000000).get();
+                doc = Jsoup.connect(locate2ch()).maxBodySize(0).timeout(5000000).get(); // tõmba HTML fail linkide jaoks
             }
-                Elements links = doc.select(webmCheck());
+                Elements links = doc.select(webmCheck()); // kontrollida mis tüüpi faile kasutaja soovib
             for (Element x : links) {
                 elemnList.add(conf.getPrefix() + x.attr("href")); // leida HTMList <a href=> lingid
             }
@@ -132,7 +132,7 @@ public abstract class ImgBoard extends Thread {
                     System.out.println("[INFO] Downloading " + linkList.size() + " pics/vids from " + conf.getBoard());
                 }
                 percentage = (i * 100 / linkList.size());
-                System.out.printf("[INFO] %d %% %s DLing: %s%n", percentage, Thread.currentThread().getName(), linkList.get(i));
+                System.out.printf("[INFO] %d %% %s DLing: %s%n", percentage, Thread.currentThread().getName(), linkList.get(i)); // info toimuva kohta stdouti
                 memfs = new RamFS();
                 URL website = new URL(linkList.get(i));
                 String url = linkList.get(i);
@@ -141,7 +141,7 @@ public abstract class ImgBoard extends Thread {
                     Hasher hasherFunc = new Hasher(memfs.getFileLocation(), conf.getHashType()); // anname räsigeneraatorile faili asukoha mälus ja räsitüübi
                     if (!hasherFunc.checkHashes()) {
                         Path completeDest = Paths.get(conf.getFileDestination() + FilenameUtils.getBaseName(url) + "." + FilenameUtils.getExtension(url));
-                        if (!Files.exists(completeDest.getParent())) { // kui faili ei ekisteeri genereeri fail
+                        if (!Files.exists(completeDest.getParent())) { // kui kausta ei ekisteeri genereeri fail
                             Files.createDirectory(completeDest.getParent()); // kui kausta ei eksisteeri siis uus kaust
                         }
                         Files.copy(memfs.getFileLocation(), completeDest, StandardCopyOption.REPLACE_EXISTING); // kopeerida mälust fail kettale
