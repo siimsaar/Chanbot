@@ -42,7 +42,11 @@ public abstract class ImgBoard extends Thread {
     int percentage;
     boolean streaming = false;
     boolean interrupted;
-
+    
+   /**
+     * Konstruktor, määrab otsitava teema ja paneb seadistused paika
+     * @param board otsitud teema
+     */
     public ImgBoard(String board) {
         this.board = board;
         conf.setValues(board);
