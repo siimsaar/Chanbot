@@ -1,5 +1,5 @@
 # bot
-Automatic thread scraper and streamer for various image boards. 
+Automatic asynchronous thread scraper and streamer for various image boards. 
 
 ### OPTIONS
 ```
